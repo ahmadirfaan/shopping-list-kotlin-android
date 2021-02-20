@@ -1,10 +1,12 @@
 package com.pascal.irfaan.shoppinglist.presentations
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.pascal.irfaan.shoppinglist.R
+import com.pascal.irfaan.shoppinglist.models.Item
 import com.pascal.irfaan.shoppinglist.utils.OnNavigationListener
 
 class MainActivity : AppCompatActivity(), OnNavigationListener {
@@ -17,11 +19,9 @@ class MainActivity : AppCompatActivity(), OnNavigationListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        addItem = AddItem()
-        viewListShopping = ViewListShopping()
+        addItem = AddItem.newInstance(this)
         createItemButton = findViewById(R.id.createItemButton)
         viewListButton = findViewById(R.id.viewListButton)
-        supportFragmentManager.beginTransaction().add(R.id.fragmentContainer, viewListShopping).commit()
         createItemButton.setOnClickListener {
             switchFragment(addItem)
         }
@@ -31,8 +31,9 @@ class MainActivity : AppCompatActivity(), OnNavigationListener {
 
     }
 
-    override fun onFragmentSplash() {
-
+    override fun addShop(itemList: MutableList<Item>) {
+        Log.i("INI INTERFACE DI MAIN ACTIVITY", "MASUKK DONG PLISSS")
+        viewListShopping = ViewListShopping.newInstance(itemList)
     }
 
     fun switchFragment(fragment: Fragment) {
