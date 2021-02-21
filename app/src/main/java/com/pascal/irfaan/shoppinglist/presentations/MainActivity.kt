@@ -20,6 +20,7 @@ class MainActivity : AppCompatActivity(), OnNavigationListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         addItem = AddItem.newInstance(this)
+        viewListShopping = ViewListShopping(null)
         createItemButton = findViewById(R.id.createItemButton)
         viewListButton = findViewById(R.id.viewListButton)
         createItemButton.setOnClickListener {
