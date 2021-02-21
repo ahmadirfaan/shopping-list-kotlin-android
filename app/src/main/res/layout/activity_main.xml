@@ -33,6 +33,7 @@
             android:layout_margin="5dp"
             android:layout_weight="1"
             android:gravity="center"
+            android:background="@drawable/button_rounded"
             android:text="@string/create_item"
             android:textSize="15sp" />
 
@@ -43,6 +44,7 @@
             android:layout_margin="5dp"
             android:layout_weight="1"
             android:gravity="center"
+            android:background="@drawable/button_rounded"
             android:text="@string/view_list"
             android:textSize="15sp" />
 
