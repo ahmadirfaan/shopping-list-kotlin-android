@@ -11,7 +11,7 @@ import com.pascal.irfaan.shoppinglist.R
 import com.pascal.irfaan.shoppinglist.models.Item
 
 
-class ViewListShopping(val itemList: MutableList<Item>) : Fragment() {
+class ViewListShopping() : Fragment() {
 
     private lateinit var viewListItem: TextView
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,25 +28,23 @@ class ViewListShopping(val itemList: MutableList<Item>) : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewListItem = (getView()?.findViewById<TextView>(R.id.viewListItem) ?: null) as TextView
-        viewListItem.text = viewListToString()
-        Log.i("INI ITEM DI VIEW LIST", itemList.toString())
     }
 
-    private fun viewListToString(): String {
-        var stringBuilder = StringBuilder()
-        for ((index, item) in itemList.withIndex()) {
-            stringBuilder.append(
-                "${index + 1}. Date Transaction : ${item.shoppingDate}, " +
-                        "Item Name : ${item.itemName}, " +
-                        "Quantity : ${item.quantity}, " +
-                        "Notes : ${item.notes} "
-            )
-            stringBuilder.append("\n")
-        }
-        return stringBuilder.toString()
-    }
+//    private fun viewListToString(): String {
+//        var stringBuilder = StringBuilder()
+//        for ((index, item) in itemList.withIndex()) {
+//            stringBuilder.append(
+//                "${index + 1}. Date Transaction : ${item.shoppingDate}, " +
+//                        "Item Name : ${item.itemName}, " +
+//                        "Quantity : ${item.quantity}, " +
+//                        "Notes : ${item.notes} "
+//            )
+//            stringBuilder.append("\n")
+//        }
+//        return stringBuilder.toString()
+//    }
 
     companion object {
-        fun newInstance(itemList: MutableList<Item>) = ViewListShopping(itemList)
+        fun newInstance() = ViewListShopping()
     }
 }

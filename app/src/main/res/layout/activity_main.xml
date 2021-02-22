@@ -7,48 +7,28 @@
     tools:context=".presentations.MainActivity">
 
 
-    <FrameLayout
-        android:id="@+id/fragmentContainer"
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/nav_host_fragment"
         android:layout_width="0dp"
+        android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/linearlayout"
+        app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent"
+        app:defaultNavHost="true"
+        app:navGraph="@navigation/navigation_path"/>
 
-    <LinearLayout
-        android:id="@+id/linearlayout"
-        android:layout_width="wrap_content"
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigationView"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/fragmentContainer">
-
-        <Button
-            android:id="@+id/createItemButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:background="@drawable/button_rounded"
-            android:text="@string/create_item"
-            android:textSize="15sp" />
-
-        <Button
-            android:id="@+id/viewListButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:background="@drawable/button_rounded"
-            android:text="@string/view_list"
-            android:textSize="15sp" />
-
-    </LinearLayout>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/nav_host_fragment"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:menu="@menu/bottom_navigation_menu"
+        />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -12,7 +12,7 @@ import com.pascal.irfaan.shoppinglist.R
 import com.pascal.irfaan.shoppinglist.models.Item
 import com.pascal.irfaan.shoppinglist.utils.OnNavigationListener
 
-class AddItem(val onNavigationListener: OnNavigationListener) : Fragment() {
+class AddItem() : Fragment() {
 
     private lateinit var addShoppingItemButton: Button
     private lateinit var item: Item
@@ -50,7 +50,6 @@ class AddItem(val onNavigationListener: OnNavigationListener) : Fragment() {
             itemList.add(item)
             clearEditText()
         }
-        onNavigationListener.addShop(itemList)
 
     }
 
@@ -87,6 +86,6 @@ class AddItem(val onNavigationListener: OnNavigationListener) : Fragment() {
 
     companion object {
         @JvmStatic
-        fun newInstance(onNavigationListener: OnNavigationListener) = AddItem(onNavigationListener)
+        fun newInstance() = AddItem()
     }
 }

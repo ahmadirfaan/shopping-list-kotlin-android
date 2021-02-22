@@ -5,38 +5,34 @@ import android.util.Log
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavController
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.NavigationUI
+import com.google.android.material.bottomnavigation.BottomNavigationMenu
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.pascal.irfaan.shoppinglist.R
 import com.pascal.irfaan.shoppinglist.models.Item
 import com.pascal.irfaan.shoppinglist.utils.OnNavigationListener
 
-class MainActivity : AppCompatActivity(), OnNavigationListener {
+class MainActivity : AppCompatActivity() {
 
-    private lateinit var addItem: AddItem
-    private lateinit var createItemButton: Button
-    private lateinit var viewListButton: Button
-    private lateinit var viewListShopping: ViewListShopping
+    private lateinit var bottomNavigationView: BottomNavigationView
+    private lateinit var navHostFragment: NavHostFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        supportActionBar?.hide()
         setContentView(R.layout.activity_main)
-        addItem = AddItem.newInstance(this)
-        createItemButton = findViewById(R.id.createItemButton)
-        viewListButton = findViewById(R.id.viewListButton)
-        createItemButton.setOnClickListener {
-            switchFragment(addItem)
-        }
-        viewListButton.setOnClickListener {
-            switchFragment(viewListShopping)
-        }
 
+        bottomNavigationView = findViewById(R.id.bottomNavigationView)
+        navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        NavigationUI.setupWithNavController(bottomNavigationView, navHostFragment.findNavController())
     }
 
-    override fun addShop(itemList: MutableList<Item>) {
-        Log.i("INI INTERFACE DI MAIN ACTIVITY", "MASUKK DONG PLISSS")
-        viewListShopping = ViewListShopping.newInstance(itemList)
-    }
 
-    fun switchFragment(fragment: Fragment) {
-        supportFragmentManager.beginTransaction().replace(R.id.fragmentContainer, fragment).commit()
-    }
+
+
+
 }
