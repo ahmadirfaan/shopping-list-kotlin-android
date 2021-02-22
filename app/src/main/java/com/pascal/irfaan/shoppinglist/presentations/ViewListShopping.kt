@@ -18,9 +18,14 @@ class ViewListShopping() : Fragment(), View.OnClickListener  {
 
     private lateinit var backButton : Button
     private lateinit var navController : NavController
+    private var itemList : MutableList<Item>? = null
+    private lateinit var viewListItem : TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        arguments?.let{
+            itemList = it.get("ITEM_LIST") as MutableList<Item>?
+        }
     }
 
     override fun onCreateView(
@@ -28,30 +33,31 @@ class ViewListShopping() : Fragment(), View.OnClickListener  {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_view_list_shopping, container, false)
-        backButton = view.findViewById(R.id.backButton)
+        backButton = view.findViewById(R.id.backButtonToCreateItem)
         return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         navController = Navigation.findNavController(view)
+        viewListItem = (getView()?.findViewById<TextView>(R.id.viewListItem) ?: null) as TextView
+        viewListItem.text = viewListToString()
         backButton.setOnClickListener(this)
-
     }
 
-//    private fun viewListToString(): String {
-//        var stringBuilder = StringBuilder()
-//        for ((index, item) in itemList.withIndex()) {
-//            stringBuilder.append(
-//                "${index + 1}. Date Transaction : ${item.shoppingDate}, " +
-//                        "Item Name : ${item.itemName}, " +
-//                        "Quantity : ${item.quantity}, " +
-//                        "Notes : ${item.notes} "
-//            )
-//            stringBuilder.append("\n")
-//        }
-//        return stringBuilder.toString()
-//    }
+    private fun viewListToString(): String {
+        var stringBuilder = StringBuilder()
+        for ((index, item) in itemList!!.withIndex()) {
+            stringBuilder.append(
+                "${index + 1}. Date Transaction : ${item.shoppingDate}, " +
+                        "Item Name : ${item.itemName}, " +
+                        "Quantity : ${item.quantity}, " +
+                        "Notes : ${item.notes} "
+            )
+            stringBuilder.append("\n")
+        }
+        return stringBuilder.toString()
+    }
 
     override fun onClick(v: View?) {
         when(v) {
