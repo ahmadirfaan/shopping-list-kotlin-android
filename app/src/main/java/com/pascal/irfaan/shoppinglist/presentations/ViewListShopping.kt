@@ -10,22 +10,23 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import androidx.navigation.findNavController
 import com.pascal.irfaan.shoppinglist.R
 import com.pascal.irfaan.shoppinglist.models.Item
+import com.pascal.irfaan.shoppinglist.utils.ItemListConfig
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 class ViewListShopping() : Fragment(), View.OnClickListener  {
 
     private lateinit var backButton : Button
     private lateinit var navController : NavController
-    private var itemList : MutableList<Item>? = null
     private lateinit var viewListItem : TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let{
-            itemList = it.get("ITEM_LIST") as MutableList<Item>?
-        }
     }
 
     override fun onCreateView(
@@ -45,9 +46,24 @@ class ViewListShopping() : Fragment(), View.OnClickListener  {
         backButton.setOnClickListener(this)
     }
 
+    override fun onPause() {
+        super.onPause()
+        Log.i("INI FRAGMENT VIEW LIST", "INI ON PAUSE" )
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.i("INI FRAGMENT VIEW LIST", "INI ON resume" )
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.i("INI FRAGMENT VIEW LIST", "INI ON DESTROY ${ItemListConfig.toString()}" )
+    }
+
     private fun viewListToString(): String {
         var stringBuilder = StringBuilder()
-        for ((index, item) in itemList!!.withIndex()) {
+        for ((index, item) in ItemListConfig.withIndex()) {
             stringBuilder.append(
                 "${index + 1}. Date Transaction : ${item.shoppingDate}, " +
                         "Item Name : ${item.itemName}, " +
@@ -61,7 +77,7 @@ class ViewListShopping() : Fragment(), View.OnClickListener  {
 
     override fun onClick(v: View?) {
         when(v) {
-            backButton -> navController.navigate(R.id.action_viewListShopping_to_addItem)
+            backButton -> view?.findNavController()?.popBackStack()
         }
     }
 

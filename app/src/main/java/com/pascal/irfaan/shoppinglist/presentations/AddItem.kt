@@ -15,6 +15,7 @@ import androidx.navigation.findNavController
 import com.google.android.material.textfield.TextInputEditText
 import com.pascal.irfaan.shoppinglist.R
 import com.pascal.irfaan.shoppinglist.models.Item
+import com.pascal.irfaan.shoppinglist.utils.ItemListConfig
 import com.pascal.irfaan.shoppinglist.utils.OnNavigationListener
 
 class AddItem() : Fragment(), View.OnClickListener {
@@ -27,7 +28,6 @@ class AddItem() : Fragment(), View.OnClickListener {
     private lateinit var inputNotes: TextInputEditText
     private lateinit var goToList : Button
     private lateinit var navController : NavController
-    private val itemList = mutableListOf<Item>()
 
 
     override fun onCreateView(
@@ -49,13 +49,12 @@ class AddItem() : Fragment(), View.OnClickListener {
         navController = Navigation.findNavController(view)
         goToList.setOnClickListener(this)
         addShoppingItemButton.setOnClickListener {
-            item = convertInputToItem(inputShoppingDate, inputItemName, inputQuantity, inputNotes)
 //            Log.i("SHOPPING DATE", inputShoppingDate.text.toString())
 //            Log.i("INI INTERFACE FRAGMENT ADD ITEM", item.toString())
-            itemList.add(item)
+            item = convertInputToItem(inputShoppingDate, inputItemName, inputQuantity, inputNotes)
+            ItemListConfig.add(item)
             Toast.makeText(requireContext(), "Add ${item.itemName} Successfully", Toast.LENGTH_LONG).show()
             clearEditText()
-            view.findNavController().navigate(R.id.action_addItem_to_viewListShopping, bundleOf("ITEM_LIST" to itemList))
         }
     }
 
@@ -89,9 +88,11 @@ class AddItem() : Fragment(), View.OnClickListener {
     }
 
     override fun onClick(v: View?) {
-
+        val bundle = bundleOf("ITEM_LIST" to ItemListConfig)
         when(v) {
-            goToList -> navController.navigate(R.id.action_addItem_to_viewListShopping)
+            goToList -> {
+                navController.navigate(R.id.action_addItem_to_viewListShopping, bundle)
+            }
         }
     }
 }
