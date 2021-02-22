@@ -1,22 +1,24 @@
 package com.pascal.irfaan.shoppinglist.presentations
 
+import android.app.DatePickerDialog
 import android.os.Bundle
-import android.util.Log
+
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
-import androidx.navigation.findNavController
 import com.google.android.material.textfield.TextInputEditText
 import com.pascal.irfaan.shoppinglist.R
 import com.pascal.irfaan.shoppinglist.models.Item
 import com.pascal.irfaan.shoppinglist.utils.ItemListConfig
-import com.pascal.irfaan.shoppinglist.utils.OnNavigationListener
+import java.text.SimpleDateFormat
+import java.util.*
 
 class AddItem() : Fragment(), View.OnClickListener {
 
@@ -27,7 +29,10 @@ class AddItem() : Fragment(), View.OnClickListener {
     private lateinit var inputQuantity: TextInputEditText
     private lateinit var inputNotes: TextInputEditText
     private lateinit var goToList : Button
+    private lateinit var calendarButton: ImageButton
     private lateinit var navController : NavController
+
+    private var formatDate = SimpleDateFormat("dd MMMM YYYY", Locale.US)
 
 
     override fun onCreateView(
@@ -41,6 +46,7 @@ class AddItem() : Fragment(), View.OnClickListener {
         inputNotes = view.findViewById(R.id.inputNotes)
         addShoppingItemButton = view.findViewById(R.id.addShoppingItemButton)
         goToList = view.findViewById(R.id.goToList)
+        calendarButton = view.findViewById(R.id.calendarButton)
         return view
     }
 
@@ -48,6 +54,24 @@ class AddItem() : Fragment(), View.OnClickListener {
         super.onViewCreated(view, savedInstanceState)
         navController = Navigation.findNavController(view)
         goToList.setOnClickListener(this)
+        inputShoppingDate.isEnabled = false
+        val getDate = Calendar.getInstance()
+
+        inputShoppingDate.setText(formatDate.format(getDate.time))
+        calendarButton.setOnClickListener {
+            val getDate = Calendar.getInstance()
+            val datepicker = DatePickerDialog(requireContext(), DatePickerDialog.OnDateSetListener {
+                    view, year, month, dayOfMonth ->
+                val selectDate = Calendar.getInstance()
+                selectDate.set(Calendar.YEAR, year)
+                selectDate.set(Calendar.MONTH, month)
+                selectDate.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+                val date = formatDate.format(selectDate.time)
+                Toast.makeText(requireContext(), "Date : $date", Toast.LENGTH_SHORT).show()
+                inputShoppingDate.setText(date)
+            }, getDate.get(Calendar.YEAR), getDate.get(Calendar.MONTH), getDate.get(Calendar.DAY_OF_MONTH))
+            datepicker.show()
+        }
         addShoppingItemButton.setOnClickListener {
 //            Log.i("SHOPPING DATE", inputShoppingDate.text.toString())
 //            Log.i("INI INTERFACE FRAGMENT ADD ITEM", item.toString())
