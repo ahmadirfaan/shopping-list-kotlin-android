@@ -9,34 +9,13 @@ import com.pascal.irfaan.shoppinglist.R
 import com.pascal.irfaan.shoppinglist.models.Item
 import com.pascal.irfaan.shoppinglist.utils.OnNavigationListener
 
-class MainActivity : AppCompatActivity(), OnNavigationListener {
+class MainActivity : AppCompatActivity() {
 
-    private lateinit var addItem: AddItem
-    private lateinit var createItemButton: Button
-    private lateinit var viewListButton: Button
-    private lateinit var viewListShopping: ViewListShopping
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        addItem = AddItem.newInstance(this)
-        createItemButton = findViewById(R.id.createItemButton)
-        viewListButton = findViewById(R.id.viewListButton)
-        createItemButton.setOnClickListener {
-            switchFragment(addItem)
-        }
-        viewListButton.setOnClickListener {
-            switchFragment(viewListShopping)
-        }
-
+        supportActionBar?.hide()
     }
 
-    override fun addShop(itemList: MutableList<Item>) {
-        Log.i("INI INTERFACE DI MAIN ACTIVITY", "MASUKK DONG PLISSS")
-        viewListShopping = ViewListShopping.newInstance(itemList)
-    }
-
-    fun switchFragment(fragment: Fragment) {
-        supportFragmentManager.beginTransaction().replace(R.id.fragmentContainer, fragment).commit()
-    }
 }

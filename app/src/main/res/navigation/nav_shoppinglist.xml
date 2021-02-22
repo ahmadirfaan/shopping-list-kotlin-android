@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_shoppinglist"
+    app:startDestination="@id/addItem">
+
+
+    <fragment
+        android:id="@+id/addItem"
+        android:name="com.pascal.irfaan.shoppinglist.presentations.AddItem"
+        android:label="fragment_add_item"
+        tools:layout="@layout/fragment_add_item" >
+        <action
+            android:id="@+id/action_addItem_to_viewListShopping"
+            app:destination="@id/viewListShopping"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right"/>
+    </fragment>
+    <fragment
+        android:id="@+id/viewListShopping"
+        android:name="com.pascal.irfaan.shoppinglist.presentations.ViewListShopping"
+        android:label="fragment_view_list_shopping"
+        tools:layout="@layout/fragment_view_list_shopping" >
+        <action
+            android:id="@+id/action_viewListShopping_to_addItem"
+            app:destination="@id/addItem"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right"/>
+    </fragment>
+</navigation>
