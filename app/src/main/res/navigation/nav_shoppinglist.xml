@@ -8,7 +8,7 @@
 
     <fragment
         android:id="@+id/addItem"
-        android:name="com.pascal.irfaan.shoppinglist.presentations.AddItem"
+        android:name="com.pascal.irfaan.shoppinglist.presentations.AddItemFragment"
         android:label="fragment_add_item"
         tools:layout="@layout/fragment_add_item" >
         <action

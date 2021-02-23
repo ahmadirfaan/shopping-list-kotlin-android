@@ -8,25 +8,29 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import com.pascal.irfaan.shoppinglist.R
+import com.pascal.irfaan.shoppinglist.databinding.FragmentViewListShoppingBinding
 import com.pascal.irfaan.shoppinglist.models.Item
 import com.pascal.irfaan.shoppinglist.utils.ItemListConfig
+import com.pascal.irfaan.shoppinglist.utils.ItemViewModel
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
-class ViewListShopping() : Fragment(), View.OnClickListener  {
+class ViewListShopping() : Fragment()  {
 
-    private lateinit var backButton : Button
+    private lateinit var binding : FragmentViewListShoppingBinding
     private lateinit var navController : NavController
-    private lateinit var viewListItem : TextView
+    private lateinit var viewModel: ItemViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        viewModel = ViewModelProvider(requireActivity()).get(ItemViewModel::class.java)
     }
 
     override fun onCreateView(
@@ -34,16 +38,20 @@ class ViewListShopping() : Fragment(), View.OnClickListener  {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_view_list_shopping, container, false)
-        backButton = view.findViewById(R.id.backButtonToCreateItem)
-        return view
+        binding = FragmentViewListShoppingBinding.inflate(layoutInflater)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         navController = Navigation.findNavController(view)
-        viewListItem = (getView()?.findViewById<TextView>(R.id.viewListItem) ?: null) as TextView
-        viewListItem.text = viewListToString()
-        backButton.setOnClickListener(this)
+        binding.apply {
+            viewListItem.text = viewListToString()
+            backButtonToCreateItem.setOnClickListener {
+                view?.findNavController()?.popBackStack()
+
+            }
+        }
     }
 
     override fun onPause() {
@@ -63,7 +71,7 @@ class ViewListShopping() : Fragment(), View.OnClickListener  {
 
     private fun viewListToString(): String {
         var stringBuilder = StringBuilder()
-        for ((index, item) in ItemListConfig.withIndex()) {
+        for ((index, item) in viewModel.itemList.withIndex()) {
             stringBuilder.append(
                 "${index + 1}. Date Transaction : ${item.shoppingDate}, " +
                         "Item Name : ${item.itemName}, " +
@@ -75,11 +83,6 @@ class ViewListShopping() : Fragment(), View.OnClickListener  {
         return stringBuilder.toString()
     }
 
-    override fun onClick(v: View?) {
-        when(v) {
-            backButton -> view?.findNavController()?.popBackStack()
-        }
-    }
 
     companion object {
         fun newInstance() = ViewListShopping()
