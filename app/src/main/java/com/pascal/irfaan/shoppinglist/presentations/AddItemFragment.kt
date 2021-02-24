@@ -10,11 +10,11 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
-import com.google.android.material.textfield.TextInputEditText
 import com.pascal.irfaan.shoppinglist.R
 import com.pascal.irfaan.shoppinglist.databinding.FragmentAddItemBinding
 import com.pascal.irfaan.shoppinglist.models.Item
-import com.pascal.irfaan.shoppinglist.utils.ItemViewModel
+import com.pascal.irfaan.shoppinglist.utils.ResourceStatus
+import com.pascal.irfaan.shoppinglist.viewmodel.ItemViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -22,13 +22,13 @@ class AddItemFragment() : Fragment() {
 
     private lateinit var binding: FragmentAddItemBinding
     private lateinit var navController: NavController
-    private lateinit var item: Item
     private lateinit var viewModel: ItemViewModel
     private var formatDate = SimpleDateFormat("dd MMMM YYYY", Locale.US)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(requireActivity()).get(ItemViewModel::class.java)
+        initModel()
+        subscribe()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -68,31 +68,12 @@ class AddItemFragment() : Fragment() {
         }
         binding.apply {
             addShoppingItemButton.setOnClickListener {
-                val inputShoppingDate = inputShoppingDate.text.toString()
-                val inputItemName = inputItemName.text.toString()
-                val inputQuantity = inputQuantity.text.toString()
-                val inputNotes = inputNotes.text.toString()
-                when {
-                    inputShoppingDate.isNullOrBlank() -> {
-                        Toast.makeText(requireContext(), "THE FIELD SHOPPING DATE MUST NOT EMPTY", Toast.LENGTH_LONG).show()
-                    }
-                    inputItemName.isNullOrBlank() -> {
-                        Toast.makeText(requireContext(), "THE FIELD INPUT ITEM NAME EMPTY", Toast.LENGTH_LONG).show()
-                    }
-                    inputQuantity.isNullOrBlank() -> {
-                        Toast.makeText(requireContext(), "THE FIELD INPUT QUANTITY EMPTY", Toast.LENGTH_LONG).show()
-                    }
-                    inputNotes.isNullOrBlank() -> {
-                        Toast.makeText(requireContext(), "THE FIELD INPUT NOTES EMPTY", Toast.LENGTH_LONG).show()
-                    }
-                    else -> {
-                        item = Item(inputShoppingDate, inputItemName, inputQuantity, inputNotes)
-                        viewModel.itemList.add(item)
-                        Toast.makeText(requireContext(), "ADD ${item.itemName} SUCCESSFULLY", Toast.LENGTH_LONG).show()
-                        clearEditText()
-                    }
-                }
-
+                viewModel.inputValidation(
+                    inputItemName.text.toString(),
+                    inputShoppingDate.text.toString(),
+                    inputQuantity.text.toString(),
+                    inputNotes.text.toString()
+                )
             }
         }
 
@@ -113,6 +94,35 @@ class AddItemFragment() : Fragment() {
             inputQuantity.text?.clear()
             inputNotes.text?.clear()
         }
+    }
+
+    private fun initModel() {
+        viewModel = ViewModelProvider(requireActivity()).get(ItemViewModel::class.java)
+    }
+
+    private fun subscribe() {
+        viewModel.inputValidation.observe(this, {
+            when (it.status) {
+                ResourceStatus.LOADING -> {
+                    Toast.makeText(requireContext(), "INI LAGI LOADING", Toast.LENGTH_LONG).show()
+
+                }
+                ResourceStatus.SUCCESS -> {
+                    val item = Item(
+                        binding.inputShoppingDate.text.toString(),
+                        binding.inputItemName.text.toString(),
+                        binding.inputQuantity.text.toString(),
+                        binding.inputNotes.text.toString()
+                    )
+                    viewModel.itemList.add(item)
+                    Toast.makeText(requireContext(), "ADD ${item.itemName} SUCCESSFULLY", Toast.LENGTH_LONG).show()
+                    clearEditText()
+                }
+                ResourceStatus.FAILURE -> {
+                    Toast.makeText(requireContext(), it.message, Toast.LENGTH_LONG).show()
+                }
+            }
+        })
     }
 
 
