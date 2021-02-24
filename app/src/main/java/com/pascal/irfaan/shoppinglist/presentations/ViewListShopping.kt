@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
@@ -14,6 +15,7 @@ import androidx.navigation.findNavController
 import com.pascal.irfaan.shoppinglist.R
 import com.pascal.irfaan.shoppinglist.databinding.FragmentViewListShoppingBinding
 import com.pascal.irfaan.shoppinglist.models.Item
+import com.pascal.irfaan.shoppinglist.utils.LoadingDialog
 import com.pascal.irfaan.shoppinglist.utils.ResourceStatus
 import com.pascal.irfaan.shoppinglist.viewmodel.ItemViewModel
 
@@ -23,6 +25,7 @@ class ViewListShopping() : Fragment() {
     private lateinit var binding: FragmentViewListShoppingBinding
     private lateinit var navController: NavController
     private lateinit var viewModel: ItemViewModel
+    private lateinit var loadingDialog : AlertDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,6 +38,7 @@ class ViewListShopping() : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_view_list_shopping, container, false)
+        loadingDialog = LoadingDialog.build(requireContext())
         binding = FragmentViewListShoppingBinding.inflate(layoutInflater)
         return binding.root
     }
@@ -87,15 +91,16 @@ class ViewListShopping() : Fragment() {
         viewModel.item.observe(this, {
             when (it.status) {
                 ResourceStatus.LOADING -> {
-                    Toast.makeText(requireContext(), "INI LAGI LOADING", Toast.LENGTH_LONG).show()
+                    loadingDialog.show()
                     binding.viewListItem.text = ""
                 }
                 ResourceStatus.SUCCESS -> {
+                    loadingDialog.hide()
                     binding.viewListItem.text = viewListToString(it.data as MutableList<Item>)
                     Toast.makeText(requireContext(), "LIST ITEM DENGAN JUMLAH ${viewModel.itemList.size}", Toast.LENGTH_LONG).show()
                 }
                 ResourceStatus.FAILURE -> {
-                    Toast.makeText(requireContext(), it.message, Toast.LENGTH_LONG).show()
+                    loadingDialog.hide()
                     binding.viewListItem.text = "DATA ITEM BELUM ADA"
                 }
             }

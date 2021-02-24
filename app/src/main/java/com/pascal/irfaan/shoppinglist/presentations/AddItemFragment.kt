@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
@@ -13,6 +14,7 @@ import androidx.navigation.Navigation
 import com.pascal.irfaan.shoppinglist.R
 import com.pascal.irfaan.shoppinglist.databinding.FragmentAddItemBinding
 import com.pascal.irfaan.shoppinglist.models.Item
+import com.pascal.irfaan.shoppinglist.utils.LoadingDialog
 import com.pascal.irfaan.shoppinglist.utils.ResourceStatus
 import com.pascal.irfaan.shoppinglist.viewmodel.ItemViewModel
 import java.text.SimpleDateFormat
@@ -23,6 +25,7 @@ class AddItemFragment() : Fragment() {
     private lateinit var binding: FragmentAddItemBinding
     private lateinit var navController: NavController
     private lateinit var viewModel: ItemViewModel
+    private lateinit var loadingDialog : AlertDialog
     private var formatDate = SimpleDateFormat("dd MMMM YYYY", Locale.US)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,7 +37,7 @@ class AddItemFragment() : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = FragmentAddItemBinding.inflate(layoutInflater)
         val view = inflater.inflate(R.layout.fragment_add_item, container, false)
-
+        loadingDialog = LoadingDialog.build(requireContext())
         return binding.root
     }
 
@@ -104,10 +107,11 @@ class AddItemFragment() : Fragment() {
         viewModel.inputValidation.observe(this, {
             when (it.status) {
                 ResourceStatus.LOADING -> {
-                    Toast.makeText(requireContext(), "INI LAGI LOADING", Toast.LENGTH_LONG).show()
+                    loadingDialog.show()
                     binding.addShoppingItemButton.isEnabled = false
                 }
                 ResourceStatus.SUCCESS -> {
+                    loadingDialog.hide()
                     binding.addShoppingItemButton.isEnabled = true
                     val item = Item(
                         binding.inputShoppingDate.text.toString(),
@@ -120,6 +124,7 @@ class AddItemFragment() : Fragment() {
                     clearEditText()
                 }
                 ResourceStatus.FAILURE -> {
+                    loadingDialog.hide()
                     Toast.makeText(requireContext(), it.message, Toast.LENGTH_LONG).show()
                     binding.addShoppingItemButton.isEnabled = true
                 }
