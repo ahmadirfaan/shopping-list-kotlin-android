@@ -13,6 +13,7 @@ import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import com.pascal.irfaan.shoppinglist.R
 import com.pascal.irfaan.shoppinglist.databinding.FragmentViewListShoppingBinding
+import com.pascal.irfaan.shoppinglist.models.Item
 import com.pascal.irfaan.shoppinglist.utils.ResourceStatus
 import com.pascal.irfaan.shoppinglist.viewmodel.ItemViewModel
 
@@ -45,7 +46,6 @@ class ViewListShopping() : Fragment() {
         binding.apply {
             backButtonToCreateItem.setOnClickListener {
                 view?.findNavController()?.popBackStack()
-
             }
         }
     }
@@ -65,9 +65,9 @@ class ViewListShopping() : Fragment() {
         Log.i("INI FRAGMENT VIEW LIST", "INI ON DESTROY")
     }
 
-    private fun viewListToString(): String {
+    private fun viewListToString(itemList: MutableList<Item>): String {
         var stringBuilder = StringBuilder()
-        for ((index, item) in viewModel.itemList.withIndex()) {
+        for ((index, item) in itemList.withIndex()) {
             stringBuilder.append(
                 "${index + 1}. Date Transaction : ${item.shoppingDate}, " +
                         "Item Name : ${item.itemName}, " +
@@ -88,13 +88,15 @@ class ViewListShopping() : Fragment() {
             when (it.status) {
                 ResourceStatus.LOADING -> {
                     Toast.makeText(requireContext(), "INI LAGI LOADING", Toast.LENGTH_LONG).show()
+                    binding.viewListItem.text = ""
                 }
                 ResourceStatus.SUCCESS -> {
-                    binding.viewListItem.text = viewListToString()
+                    binding.viewListItem.text = viewListToString(it.data as MutableList<Item>)
                     Toast.makeText(requireContext(), "LIST ITEM DENGAN JUMLAH ${viewModel.itemList.size}", Toast.LENGTH_LONG).show()
                 }
                 ResourceStatus.FAILURE -> {
                     Toast.makeText(requireContext(), it.message, Toast.LENGTH_LONG).show()
+                    binding.viewListItem.text = "DATA ITEM BELUM ADA"
                 }
             }
         })

@@ -105,9 +105,10 @@ class AddItemFragment() : Fragment() {
             when (it.status) {
                 ResourceStatus.LOADING -> {
                     Toast.makeText(requireContext(), "INI LAGI LOADING", Toast.LENGTH_LONG).show()
-
+                    binding.addShoppingItemButton.isEnabled = false
                 }
                 ResourceStatus.SUCCESS -> {
+                    binding.addShoppingItemButton.isEnabled = true
                     val item = Item(
                         binding.inputShoppingDate.text.toString(),
                         binding.inputItemName.text.toString(),
@@ -120,6 +121,7 @@ class AddItemFragment() : Fragment() {
                 }
                 ResourceStatus.FAILURE -> {
                     Toast.makeText(requireContext(), it.message, Toast.LENGTH_LONG).show()
+                    binding.addShoppingItemButton.isEnabled = true
                 }
             }
         })
