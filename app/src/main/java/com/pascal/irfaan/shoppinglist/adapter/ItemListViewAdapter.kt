@@ -2,16 +2,17 @@ package com.pascal.irfaan.shoppinglist.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.RecyclerView
 import com.pascal.irfaan.shoppinglist.R
 import com.pascal.irfaan.shoppinglist.holder.ItemListViewHolder
 import com.pascal.irfaan.shoppinglist.models.Item
 import com.pascal.irfaan.shoppinglist.utils.ItemClickListener
-import com.pascal.irfaan.shoppinglist.viewmodel.ItemViewModel
+import com.pascal.irfaan.shoppinglist.repositories.impl.ItemRepositoryImpl
 
 class ItemListViewAdapter(val itemClickListener: ItemClickListener) : RecyclerView.Adapter<ItemListViewHolder>() {
 
-    private var items = ItemViewModel().getItemList()
+    private var items = ArrayList<Item>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemListViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(

@@ -5,14 +5,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.pascal.irfaan.shoppinglist.models.Item
 import com.pascal.irfaan.shoppinglist.utils.ItemClickListener
+import com.pascal.irfaan.shoppinglist.repositories.impl.ItemRepositoryImpl
 import com.pascal.irfaan.shoppinglist.utils.ResourceState
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class ItemViewModel : ViewModel(), ItemClickListener {
+class ItemViewModel(val itemRepository: ItemRepositoryImpl) : ViewModel(), ItemClickListener {
 
-    private var itemList = ArrayList<Item>()
     private var _itemListLiveData = MutableLiveData<ArrayList<Item>>()
     val itemListLiveData: LiveData<ArrayList<Item>>
         get() {
@@ -31,19 +31,23 @@ class ItemViewModel : ViewModel(), ItemClickListener {
         }
 
     fun addItemToList(item : Item) {
-        itemList.add(item)
-        _itemListLiveData.value = itemList
+        itemRepository.add(item)
+        loadItemData()
     }
 
-    fun getItemList(): ArrayList<Item> = itemList
+    init {
+        loadItemData()
+    }
+
+    fun getItemList(): ArrayList<Item> = itemRepository.list()
 
     fun inputValidation(vararg input: String) {
         GlobalScope.launch {
             _inputValidation.postValue(ResourceState.loading())
             delay(2000)
-            var check = ArrayList<Int>()
+            val check = ArrayList<Int>()
             for (i in input) {
-                if (!i.isEmpty() || !i.isBlank()) {
+                if (i.isNotEmpty() || i.isNotBlank()) {
                     check.add(1)
                 }
             }
@@ -60,18 +64,21 @@ class ItemViewModel : ViewModel(), ItemClickListener {
         GlobalScope.launch {
             _validationItemList.postValue(ResourceState.loading())
             delay(2000)
-            if (itemList.isEmpty()) {
+            if (itemRepository.list().isEmpty()) {
                 _validationItemList.postValue(ResourceState.failure("ITEM IS NULL"))
             } else {
-                _validationItemList.postValue(ResourceState.success(itemList))
+                _validationItemList.postValue(ResourceState.success(true))
             }
         }
     }
 
     override fun onDelete(item: Item) {
-        val itemDelete = itemList.indexOf(item)
-        itemList.removeAt(itemDelete)
-        _itemListLiveData.value = itemList
+        itemRepository.delete(item)
+        loadItemData()
+    }
+
+    fun loadItemData() {
+        _itemListLiveData.value = itemRepository.list()
     }
 
 }

@@ -9,14 +9,15 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import com.pascal.irfaan.shoppinglist.R
 import com.pascal.irfaan.shoppinglist.databinding.FragmentAddItemBinding
 import com.pascal.irfaan.shoppinglist.models.Item
+import com.pascal.irfaan.shoppinglist.repositories.impl.ItemRepositoryImpl
 import com.pascal.irfaan.shoppinglist.utils.LoadingDialog
-import com.pascal.irfaan.shoppinglist.utils.ResourceState
 import com.pascal.irfaan.shoppinglist.utils.ResourceStatus
 import com.pascal.irfaan.shoppinglist.viewmodel.ItemViewModel
 import java.text.SimpleDateFormat
@@ -102,7 +103,13 @@ class AddItemFragment() : Fragment() {
     }
 
     private fun initModel() {
-        viewModel = ViewModelProvider(requireActivity()).get(ItemViewModel::class.java)
+        viewModel = ViewModelProvider(requireActivity(), object : ViewModelProvider.Factory{
+            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+                val repo = ItemRepositoryImpl()
+                return ItemViewModel(repo) as T
+            }
+
+        }).get(ItemViewModel::class.java)
     }
 
     private fun subscribe() {

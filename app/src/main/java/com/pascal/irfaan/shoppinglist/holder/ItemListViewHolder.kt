@@ -12,10 +12,10 @@ class ItemListViewHolder(val view: View, val clickListener: ItemClickListener) :
 
     fun bind(item: Item) {
         binding.apply {
-            tvItemName.text = item.itemName
-            tvShoppingDate.text = item.shoppingDate
-            tvQuantity.text = item.quantity
-            tvNotes.text = item.notes
+            tvItemName.text = "Item Name : ${item.itemName}"
+            tvShoppingDate.text = "Date : ${item.shoppingDate}"
+            tvQuantity.text = "Quantity : ${item.quantity}"
+            tvNotes.text = "Note : ${item.notes}"
             buttonDelete.setOnClickListener {
                 clickListener.onDelete(item)
             }
