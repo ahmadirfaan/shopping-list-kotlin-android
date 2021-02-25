@@ -41,14 +41,16 @@ class ItemViewModel : ViewModel(), ItemClickListener {
         GlobalScope.launch {
             _inputValidation.postValue(ResourceState.loading())
             delay(2000)
+            var check = ArrayList<Int>()
             for (i in input) {
-                if (i.isBlank()) {
-                    _inputValidation.postValue(ResourceState.failure("The Input Must not Empty"))
-                    break
-                } else {
-                    _inputValidation.postValue(ResourceState.success(true))
-                    continue
+                if (!i.isEmpty() || !i.isBlank()) {
+                    check.add(1)
                 }
+            }
+            if(check.size == input.size) {
+                _inputValidation.postValue(ResourceState.success(true))
+            } else {
+                _inputValidation.postValue(ResourceState.failure("INPUT MUST NOT EMPTY"))
             }
 
         }

@@ -16,6 +16,7 @@ import com.pascal.irfaan.shoppinglist.R
 import com.pascal.irfaan.shoppinglist.databinding.FragmentAddItemBinding
 import com.pascal.irfaan.shoppinglist.models.Item
 import com.pascal.irfaan.shoppinglist.utils.LoadingDialog
+import com.pascal.irfaan.shoppinglist.utils.ResourceState
 import com.pascal.irfaan.shoppinglist.utils.ResourceStatus
 import com.pascal.irfaan.shoppinglist.viewmodel.ItemViewModel
 import java.text.SimpleDateFormat
@@ -112,6 +113,7 @@ class AddItemFragment() : Fragment() {
                     binding.addShoppingItemButton.isEnabled = false
                 }
                 ResourceStatus.SUCCESS -> {
+                    Log.i("ini add item fragment", "RESOURCE STATE SUCCESS")
                     loadingDialog.hide()
                     binding.addShoppingItemButton.isEnabled = true
                     val item = Item(
@@ -136,13 +138,20 @@ class AddItemFragment() : Fragment() {
     override fun onPause() {
         super.onPause()
         Log.i("INI ADD ITEM FRAGMENT", "ON PAUSE")
+        binding.apply {
+            viewModel.inputValidation(
+                inputItemName.text.toString(),
+                inputShoppingDate.text.toString(),
+                inputQuantity.text.toString(),
+                inputNotes.text.toString()
+            )
+        }
 
     }
 
     override fun onResume() {
         super.onResume()
         Log.i("INI ADD ITEM FRAGMENT", "ON RESUME")
-
     }
 
 
