@@ -2,6 +2,7 @@ package com.pascal.irfaan.shoppinglist.presentations
 
 import android.app.DatePickerDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -119,7 +120,7 @@ class AddItemFragment() : Fragment() {
                         binding.inputQuantity.text.toString(),
                         binding.inputNotes.text.toString()
                     )
-                    viewModel.itemList.add(item)
+                    viewModel.addItemToList(item)
                     Toast.makeText(requireContext(), "ADD ${item.itemName} SUCCESSFULLY", Toast.LENGTH_LONG).show()
                     clearEditText()
                 }
@@ -130,6 +131,25 @@ class AddItemFragment() : Fragment() {
                 }
             }
         })
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.i("INI ADD ITEM FRAGMENT", "ON PAUSE")
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.i("INI ADD ITEM FRAGMENT", "ON RESUME")
+
+    }
+
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.i("INI ADD ITEM FRAGMENT", "ON DESTROY")
+
     }
 
 

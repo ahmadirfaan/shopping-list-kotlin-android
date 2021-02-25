@@ -12,9 +12,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.pascal.irfaan.shoppinglist.R
+import com.pascal.irfaan.shoppinglist.adapter.ItemListViewAdapter
 import com.pascal.irfaan.shoppinglist.databinding.FragmentViewListShoppingBinding
-import com.pascal.irfaan.shoppinglist.models.Item
 import com.pascal.irfaan.shoppinglist.utils.LoadingDialog
 import com.pascal.irfaan.shoppinglist.utils.ResourceStatus
 import com.pascal.irfaan.shoppinglist.viewmodel.ItemViewModel
@@ -22,14 +23,18 @@ import com.pascal.irfaan.shoppinglist.viewmodel.ItemViewModel
 
 class ViewListShopping() : Fragment() {
 
+    private lateinit var itemListViewAdapter: ItemListViewAdapter
     private lateinit var binding: FragmentViewListShoppingBinding
     private lateinit var navController: NavController
     private lateinit var viewModel: ItemViewModel
-    private lateinit var loadingDialog : AlertDialog
+    private lateinit var loadingDialog: AlertDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initViewmodel()
+        binding = FragmentViewListShoppingBinding.inflate(layoutInflater)
+        itemListViewAdapter = ItemListViewAdapter(viewModel)
+
         subscribe()
     }
 
@@ -39,7 +44,6 @@ class ViewListShopping() : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_view_list_shopping, container, false)
         loadingDialog = LoadingDialog.build(requireContext())
-        binding = FragmentViewListShoppingBinding.inflate(layoutInflater)
         return binding.root
     }
 
@@ -50,6 +54,10 @@ class ViewListShopping() : Fragment() {
         binding.apply {
             backButtonToCreateItem.setOnClickListener {
                 view?.findNavController()?.popBackStack()
+            }
+            itemListRecyclerView.apply {
+                layoutManager = LinearLayoutManager(requireContext())
+                adapter = itemListViewAdapter
             }
         }
     }
@@ -69,43 +77,31 @@ class ViewListShopping() : Fragment() {
         Log.i("INI FRAGMENT VIEW LIST", "INI ON DESTROY")
     }
 
-    private fun viewListToString(itemList: MutableList<Item>): String {
-        var stringBuilder = StringBuilder()
-        for ((index, item) in itemList.withIndex()) {
-            stringBuilder.append(
-                "${index + 1}. Date Transaction : ${item.shoppingDate}, " +
-                        "Item Name : ${item.itemName}, " +
-                        "Quantity : ${item.quantity}, " +
-                        "Notes : ${item.notes} "
-            )
-            stringBuilder.append("\n")
-        }
-        return stringBuilder.toString()
-    }
 
     private fun initViewmodel() {
         viewModel = ViewModelProvider(requireActivity()).get(ItemViewModel::class.java)
     }
 
     private fun subscribe() {
-        viewModel.item.observe(this, {
+        viewModel.validationItemList.observe(this, {
             when (it.status) {
                 ResourceStatus.LOADING -> {
                     loadingDialog.show()
-                    binding.viewListItem.text = ""
                 }
                 ResourceStatus.SUCCESS -> {
                     loadingDialog.hide()
-                    binding.viewListItem.text = viewListToString(it.data as MutableList<Item>)
-                    Toast.makeText(requireContext(), "LIST ITEM DENGAN JUMLAH ${viewModel.itemList.size}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(requireContext(), "LIST ITEM DENGAN JUMLAH ${viewModel.getItemList().size}", Toast.LENGTH_LONG).show()
                 }
                 ResourceStatus.FAILURE -> {
                     loadingDialog.hide()
-                    binding.viewListItem.text = "DATA ITEM BELUM ADA"
                 }
             }
         })
+        viewModel.itemListLiveData.observe(this, {
+            itemListViewAdapter.setItemList(it)
+        })
     }
+
 
 
     companion object {
