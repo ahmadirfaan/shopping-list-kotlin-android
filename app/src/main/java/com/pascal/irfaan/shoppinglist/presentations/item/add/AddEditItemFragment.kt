@@ -1,6 +1,5 @@
 package com.pascal.irfaan.shoppinglist.presentations.item.add
 
-import android.app.DatePickerDialog
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -16,24 +15,25 @@ import androidx.navigation.Navigation
 import com.pascal.irfaan.shoppinglist.R
 import com.pascal.irfaan.shoppinglist.databinding.FragmentAddItemBinding
 import com.pascal.irfaan.shoppinglist.models.Item
-import com.pascal.irfaan.shoppinglist.repositories.impl.ItemRepositoryImpl
 import com.pascal.irfaan.shoppinglist.presentations.components.LoadingDialog
-import com.pascal.irfaan.shoppinglist.utils.ResourceStatus
 import com.pascal.irfaan.shoppinglist.presentations.item.list.ListItemViewModel
+import com.pascal.irfaan.shoppinglist.repositories.impl.ItemRepositoryImpl
+import com.pascal.irfaan.shoppinglist.utils.DateDialog
+import com.pascal.irfaan.shoppinglist.utils.ResourceStatus
 import java.text.SimpleDateFormat
 import java.util.*
 
 class AddEditItemFragment() : Fragment() {
 
-    private var itemUpdate : Item? = null
+    private var itemUpdate: Item? = null
     private lateinit var binding: FragmentAddItemBinding
     private lateinit var navController: NavController
 
     private lateinit var listViewModel: ListItemViewModel
     private lateinit var addItemViewModel: AddItemViewModel
-    private lateinit var updateItemViewModel : UpdateItemViewModel
+    private lateinit var updateItemViewModel: UpdateItemViewModel
 
-    private lateinit var loadingDialog : AlertDialog
+    private lateinit var loadingDialog: AlertDialog
     private var formatDate = SimpleDateFormat("dd MMMM YYYY", Locale.US)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,7 +55,7 @@ class AddEditItemFragment() : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         navController = Navigation.findNavController(view)
-        if(itemUpdate != null) {
+        if (itemUpdate != null) {
             binding.apply {
                 itemUpdate?.apply {
                     inputShoppingDate.setText(shoppingDate)
@@ -64,23 +64,9 @@ class AddEditItemFragment() : Fragment() {
                     inputNotes.setText(quantity)
                     inputShoppingDate.isEnabled = false
                     calendarButton.setOnClickListener {
-                        val getDate = Calendar.getInstance()
-                        val datepicker = DatePickerDialog(
-                            requireContext(),
-                            DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
-                                val selectDate = Calendar.getInstance()
-                                selectDate.set(Calendar.YEAR, year)
-                                selectDate.set(Calendar.MONTH, month)
-                                selectDate.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-                                val date = formatDate.format(selectDate.time)
-                                Toast.makeText(requireContext(), "Date : $date", Toast.LENGTH_SHORT).show()
-                                inputShoppingDate.setText(date)
-                            },
-                            getDate.get(Calendar.YEAR),
-                            getDate.get(Calendar.MONTH),
-                            getDate.get(Calendar.DAY_OF_MONTH)
-                        )
-                        datepicker.show()
+                        DateDialog.show(requireContext(), { shoppingDate ->
+                            inputShoppingDate.setText(shoppingDate)
+                        })
                     }
                     addEditShoppingItemButton.setOnClickListener {
                         val updateItem = copy(
@@ -102,23 +88,9 @@ class AddEditItemFragment() : Fragment() {
                 val getDate = Calendar.getInstance()
                 inputShoppingDate.setText(formatDate.format(getDate.time))
                 calendarButton.setOnClickListener {
-                    val getDate = Calendar.getInstance()
-                    val datepicker = DatePickerDialog(
-                        requireContext(),
-                        DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
-                            val selectDate = Calendar.getInstance()
-                            selectDate.set(Calendar.YEAR, year)
-                            selectDate.set(Calendar.MONTH, month)
-                            selectDate.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-                            val date = formatDate.format(selectDate.time)
-                            Toast.makeText(requireContext(), "Date : $date", Toast.LENGTH_SHORT).show()
-                            inputShoppingDate.setText(date)
-                        },
-                        getDate.get(Calendar.YEAR),
-                        getDate.get(Calendar.MONTH),
-                        getDate.get(Calendar.DAY_OF_MONTH)
-                    )
-                    datepicker.show()
+                    DateDialog.show(requireContext(), { taskDate ->
+                        inputShoppingDate.setText(taskDate)
+                    })
                 }
                 addEditShoppingItemButton.setOnClickListener {
                     addItemViewModel.inputValidation(
@@ -152,14 +124,14 @@ class AddEditItemFragment() : Fragment() {
     }
 
     private fun initViewModel() {
-        listViewModel = ViewModelProvider(this, object : ViewModelProvider.Factory{
+        listViewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                 val repo = ItemRepositoryImpl()
                 return ListItemViewModel(repo) as T
             }
 
         }).get(ListItemViewModel::class.java)
-        updateItemViewModel  = ViewModelProvider(this, object : ViewModelProvider.Factory{
+        updateItemViewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                 val repo = ItemRepositoryImpl()
                 return UpdateItemViewModel(repo) as T
