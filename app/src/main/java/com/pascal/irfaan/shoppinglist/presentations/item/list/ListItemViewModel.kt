@@ -1,4 +1,4 @@
-package com.pascal.irfaan.shoppinglist.viewmodel
+package com.pascal.irfaan.shoppinglist.presentations.item.list
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -11,7 +11,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class ItemViewModel(val itemRepository: ItemRepositoryImpl) : ViewModel(), ItemClickListener {
+class ListItemViewModel(val itemRepository: ItemRepositoryImpl) : ViewModel(), ItemClickListener {
 
     private var _itemListLiveData = MutableLiveData<ArrayList<Item>>()
     val itemListLiveData: LiveData<ArrayList<Item>>
@@ -24,11 +24,12 @@ class ItemViewModel(val itemRepository: ItemRepositoryImpl) : ViewModel(), ItemC
             return _validationItemList
         }
 
-    private var _inputValidation = MutableLiveData<ResourceState>()
-    val inputValidation: LiveData<ResourceState>
+    private var _itemUpdateLiveData = MutableLiveData<Item>()
+    val itemUpdateLiveData: LiveData<Item>
         get() {
-            return _inputValidation
+            return _itemUpdateLiveData
         }
+
 
     fun addItemToList(item : Item) {
         itemRepository.add(item)
@@ -41,24 +42,6 @@ class ItemViewModel(val itemRepository: ItemRepositoryImpl) : ViewModel(), ItemC
 
     fun getItemList(): ArrayList<Item> = itemRepository.list()
 
-    fun inputValidation(vararg input: String) {
-        GlobalScope.launch {
-            _inputValidation.postValue(ResourceState.loading())
-            delay(2000)
-            val check = ArrayList<Int>()
-            for (i in input) {
-                if (i.isNotEmpty() || i.isNotBlank()) {
-                    check.add(1)
-                }
-            }
-            if(check.size == input.size) {
-                _inputValidation.postValue(ResourceState.success(true))
-            } else {
-                _inputValidation.postValue(ResourceState.failure("INPUT MUST NOT EMPTY"))
-            }
-
-        }
-    }
 
     fun validationItemList() {
         GlobalScope.launch {
@@ -75,6 +58,10 @@ class ItemViewModel(val itemRepository: ItemRepositoryImpl) : ViewModel(), ItemC
     override fun onDelete(item: Item) {
         itemRepository.delete(item)
         loadItemData()
+    }
+
+    override fun onUpdate(item: Item) {
+        _itemUpdateLiveData.value = item
     }
 
     fun loadItemData() {

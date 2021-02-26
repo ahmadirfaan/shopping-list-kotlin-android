@@ -16,5 +16,17 @@ class ItemRepositoryImpl : ItemRepository{
         val itemDeleted = itemList.indexOf(item)
         itemList.removeAt(itemDeleted)
     }
+
+    override fun update(item: Item): Item {
+        var oldItem = itemList.find {
+            it.id == item.id
+        }
+        oldItem?.let {
+            delete(it)
+            add(item)
+        }
+        return item
+    }
+
     override fun list(): ArrayList<Item> = itemList
 }

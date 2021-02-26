@@ -1,4 +1,4 @@
-package com.pascal.irfaan.shoppinglist.utils
+package com.pascal.irfaan.shoppinglist.presentations.components
 
 import android.content.Context
 import android.graphics.Color

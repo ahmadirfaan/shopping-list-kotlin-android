@@ -1,10 +1,10 @@
-package com.pascal.irfaan.shoppinglist.presentations
+package com.pascal.irfaan.shoppinglist.presentations.components
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Handler
 import com.pascal.irfaan.shoppinglist.R
+import com.pascal.irfaan.shoppinglist.presentations.MainActivity
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch

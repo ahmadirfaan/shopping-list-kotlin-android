@@ -1,4 +1,4 @@
-package com.pascal.irfaan.shoppinglist.presentations
+package com.pascal.irfaan.shoppinglist.presentations.home
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,6 +9,7 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import com.pascal.irfaan.shoppinglist.R
 import com.pascal.irfaan.shoppinglist.databinding.FragmentHomeBinding
+import com.pascal.irfaan.shoppinglist.presentations.item.list.ViewListShoppingFragment
 
 
 class HomeFragment : Fragment() {
@@ -18,7 +19,7 @@ class HomeFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val viewListShopping = ViewListShopping()
+        val viewListShopping = ViewListShoppingFragment()
     }
 
     override fun onCreateView(

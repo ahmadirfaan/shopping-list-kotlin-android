@@ -4,13 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".presentations.item.add.AddItemFragment">
+    tools:context=".presentations.item.update.ItemUpdateFragment">
 
     <TextView
-        android:id="@+id/titleShopping"
+        android:id="@+id/titleEditShopping"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Create Shopping Item"
+        android:text="Edit Shopping Item"
         android:textSize="30sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -19,7 +19,7 @@
         app:layout_constraintVertical_bias="0.167" />
 
     <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/inputShoppingDate"
+        android:id="@+id/inputEditShoppingDate"
         android:layout_width="match_parent"
         android:layout_height="63dp"
         android:layout_marginTop="48dp"
@@ -29,10 +29,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/titleShopping" />
+        app:layout_constraintTop_toBottomOf="@+id/titleEditShopping" />
 
     <ImageButton
-        android:id="@+id/calendarButton"
+        android:id="@+id/calendarEditButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="365dp"
@@ -40,12 +40,12 @@
         app:layout_constraintBottom_toTopOf="@+id/inputItemName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="@+id/inputShoppingDate"
+        app:layout_constraintStart_toStartOf="@+id/inputEditShoppingDate"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.829" />
 
     <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/inputItemName"
+        android:id="@+id/inputEditItemName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/background_round"
@@ -55,10 +55,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/inputShoppingDate" />
+        app:layout_constraintTop_toBottomOf="@+id/inputEditShoppingDate" />
 
     <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/inputQuantity"
+        android:id="@+id/inputEditQuantity"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
@@ -69,47 +69,34 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/inputItemName" />
+        app:layout_constraintTop_toBottomOf="@+id/inputEditItemName" />
 
     <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/inputNotes"
+        android:id="@+id/inputEditNotes"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
         android:background="@drawable/background_round"
-
         android:hint="Notes"
         android:textSize="25sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/inputQuantity" />
+        app:layout_constraintTop_toBottomOf="@+id/inputEditQuantity" />
 
     <Button
-        android:id="@+id/addShoppingItemButton"
+        android:id="@+id/editShoppingItemButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="76dp"
         android:layout_marginTop="52dp"
-        android:text="Add Item"
+        android:text="Update"
         android:background="@drawable/button_rounded"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.333"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/inputNotes"
+        app:layout_constraintTop_toBottomOf="@+id/inputEditNotes"
         app:layout_constraintVertical_bias="0.026" />
-
-    <Button
-        android:id="@+id/goToList"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/button_rounded"
-        android:text="Go List"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/addShoppingItemButton"
-        app:layout_constraintVertical_bias="0.308" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

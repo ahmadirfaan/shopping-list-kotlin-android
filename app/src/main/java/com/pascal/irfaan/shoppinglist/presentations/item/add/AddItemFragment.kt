@@ -1,4 +1,4 @@
-package com.pascal.irfaan.shoppinglist.presentations
+package com.pascal.irfaan.shoppinglist.presentations.item.add
 
 import android.app.DatePickerDialog
 import android.os.Bundle
@@ -17,9 +17,9 @@ import com.pascal.irfaan.shoppinglist.R
 import com.pascal.irfaan.shoppinglist.databinding.FragmentAddItemBinding
 import com.pascal.irfaan.shoppinglist.models.Item
 import com.pascal.irfaan.shoppinglist.repositories.impl.ItemRepositoryImpl
-import com.pascal.irfaan.shoppinglist.utils.LoadingDialog
+import com.pascal.irfaan.shoppinglist.presentations.components.LoadingDialog
 import com.pascal.irfaan.shoppinglist.utils.ResourceStatus
-import com.pascal.irfaan.shoppinglist.viewmodel.ItemViewModel
+import com.pascal.irfaan.shoppinglist.presentations.item.list.ListItemViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -27,9 +27,11 @@ class AddItemFragment() : Fragment() {
 
     private lateinit var binding: FragmentAddItemBinding
     private lateinit var navController: NavController
-    private lateinit var viewModel: ItemViewModel
+    private lateinit var listViewModel: ListItemViewModel
+    private lateinit var addItemViewModel: AddItemViewModel
     private lateinit var loadingDialog : AlertDialog
     private var formatDate = SimpleDateFormat("dd MMMM YYYY", Locale.US)
+    private var itemId = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,7 +76,7 @@ class AddItemFragment() : Fragment() {
         }
         binding.apply {
             addShoppingItemButton.setOnClickListener {
-                viewModel.inputValidation(
+                addItemViewModel.inputValidation(
                     inputItemName.text.toString(),
                     inputShoppingDate.text.toString(),
                     inputQuantity.text.toString(),
@@ -103,33 +105,36 @@ class AddItemFragment() : Fragment() {
     }
 
     private fun initModel() {
-        viewModel = ViewModelProvider(requireActivity(), object : ViewModelProvider.Factory{
+        listViewModel = ViewModelProvider(requireActivity(), object : ViewModelProvider.Factory{
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                 val repo = ItemRepositoryImpl()
-                return ItemViewModel(repo) as T
+                return ListItemViewModel(repo) as T
             }
 
-        }).get(ItemViewModel::class.java)
+        }).get(ListItemViewModel::class.java)
+        addItemViewModel = ViewModelProvider(requireActivity()).get(AddItemViewModel::class.java)
     }
 
     private fun subscribe() {
-        viewModel.inputValidation.observe(this, {
+        addItemViewModel.inputValidation.observe(this, {
             when (it.status) {
                 ResourceStatus.LOADING -> {
                     loadingDialog.show()
                     binding.addShoppingItemButton.isEnabled = false
                 }
                 ResourceStatus.SUCCESS -> {
+                    itemId++
                     Log.i("ini add item fragment", "RESOURCE STATE SUCCESS")
                     loadingDialog.hide()
                     binding.addShoppingItemButton.isEnabled = true
                     val item = Item(
+                        itemId.toString(),
                         binding.inputShoppingDate.text.toString(),
                         binding.inputItemName.text.toString(),
                         binding.inputQuantity.text.toString(),
                         binding.inputNotes.text.toString()
                     )
-                    viewModel.addItemToList(item)
+                    listViewModel.addItemToList(item)
                     Toast.makeText(requireContext(), "ADD ${item.itemName} SUCCESSFULLY", Toast.LENGTH_LONG).show()
                     clearEditText()
                 }
@@ -146,7 +151,7 @@ class AddItemFragment() : Fragment() {
         super.onPause()
         Log.i("INI ADD ITEM FRAGMENT", "ON PAUSE")
         binding.apply {
-            viewModel.inputValidation(
+            addItemViewModel.inputValidation(
                 inputItemName.text.toString(),
                 inputShoppingDate.text.toString(),
                 inputQuantity.text.toString(),

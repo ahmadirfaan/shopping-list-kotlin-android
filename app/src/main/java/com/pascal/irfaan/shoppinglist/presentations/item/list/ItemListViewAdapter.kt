@@ -1,14 +1,12 @@
-package com.pascal.irfaan.shoppinglist.adapter
+package com.pascal.irfaan.shoppinglist.presentations.item.list
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.RecyclerView
 import com.pascal.irfaan.shoppinglist.R
-import com.pascal.irfaan.shoppinglist.holder.ItemListViewHolder
+import com.pascal.irfaan.shoppinglist.presentations.item.list.ItemListViewHolder
 import com.pascal.irfaan.shoppinglist.models.Item
 import com.pascal.irfaan.shoppinglist.utils.ItemClickListener
-import com.pascal.irfaan.shoppinglist.repositories.impl.ItemRepositoryImpl
 
 class ItemListViewAdapter(val itemClickListener: ItemClickListener) : RecyclerView.Adapter<ItemListViewHolder>() {
 

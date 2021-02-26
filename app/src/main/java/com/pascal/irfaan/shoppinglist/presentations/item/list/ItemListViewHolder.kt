@@ -1,4 +1,4 @@
-package com.pascal.irfaan.shoppinglist.holder
+package com.pascal.irfaan.shoppinglist.presentations.item.list
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
@@ -12,12 +12,15 @@ class ItemListViewHolder(val view: View, val clickListener: ItemClickListener) :
 
     fun bind(item: Item) {
         binding.apply {
-            tvItemName.text = "Item Name : ${item.itemName}"
+            tvItemName.text = "Id : ${item.id}, Item Name : ${item.itemName}"
             tvShoppingDate.text = "Date : ${item.shoppingDate}"
             tvQuantity.text = "Quantity : ${item.quantity}"
             tvNotes.text = "Note : ${item.notes}"
             buttonDelete.setOnClickListener {
                 clickListener.onDelete(item)
+            }
+            buttonUpdateItem.setOnClickListener {
+                clickListener.onUpdate(item)
             }
         }
 

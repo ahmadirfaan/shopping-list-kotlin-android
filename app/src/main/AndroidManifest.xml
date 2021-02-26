@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ShoppingList">
         <activity android:name=".presentations.MainActivity"/>
-        <activity android:name=".presentations.SplashScreen">
+        <activity android:name=".presentations.components.SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

@@ -1,4 +1,4 @@
-package com.pascal.irfaan.shoppinglist.presentations
+package com.pascal.irfaan.shoppinglist.presentations.account
 
 import android.os.Bundle
 import android.view.LayoutInflater

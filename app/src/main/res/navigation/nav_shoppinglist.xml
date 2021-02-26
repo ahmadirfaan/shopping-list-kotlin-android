@@ -8,48 +8,63 @@
 
     <fragment
         android:id="@+id/addItem"
-        android:name="com.pascal.irfaan.shoppinglist.presentations.AddItemFragment"
+        android:name="com.pascal.irfaan.shoppinglist.presentations.item.add.AddItemFragment"
         android:label="fragment_add_item"
-        tools:layout="@layout/fragment_add_item" >
+        tools:layout="@layout/fragment_add_item">
         <action
             android:id="@+id/action_addItem_to_viewListShopping"
             app:destination="@id/viewListShopping"
             app:enterAnim="@android:anim/slide_in_left"
-            app:exitAnim="@android:anim/slide_out_right"/>
+            app:exitAnim="@android:anim/slide_out_right" />
     </fragment>
     <fragment
         android:id="@+id/viewListShopping"
-        android:name="com.pascal.irfaan.shoppinglist.presentations.ViewListShopping"
+        android:name="com.pascal.irfaan.shoppinglist.presentations.item.list.ViewListShoppingFragment"
         android:label="fragment_view_list_shopping"
-        tools:layout="@layout/fragment_view_list_shopping" />
+        tools:layout="@layout/fragment_view_list_shopping">
+        <action
+            android:id="@+id/action_viewListShopping_to_itemUpdateFragment"
+            app:destination="@id/itemUpdateFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/homeFragment"
-        android:name="com.pascal.irfaan.shoppinglist.presentations.HomeFragment"
+        android:name="com.pascal.irfaan.shoppinglist.presentations.home.HomeFragment"
         android:label="fragment_home"
-        tools:layout="@layout/fragment_home" >
+        tools:layout="@layout/fragment_home">
         <action
             android:id="@+id/action_homeFragment_to_addItem"
             app:destination="@id/addItem"
             app:enterAnim="@android:anim/slide_in_left"
-            app:exitAnim="@android:anim/slide_out_right"
-            />
+            app:exitAnim="@android:anim/slide_out_right" />
         <action
             android:id="@+id/action_homeFragment_to_viewListShopping"
             app:destination="@id/viewListShopping"
             app:enterAnim="@android:anim/slide_in_left"
-            app:exitAnim="@android:anim/slide_out_right"/>
+            app:exitAnim="@android:anim/slide_out_right" />
         <action
             android:id="@+id/action_homeFragment_to_accountFragment"
             app:destination="@id/accountFragment"
             app:enterAnim="@android:anim/slide_in_left"
-            app:exitAnim="@android:anim/slide_out_right"
-            />
+            app:exitAnim="@android:anim/slide_out_right" />
     </fragment>
 
     <fragment
         android:id="@+id/accountFragment"
-        android:name="com.pascal.irfaan.shoppinglist.presentations.AccountFragment"
+        android:name="com.pascal.irfaan.shoppinglist.presentations.account.AccountFragment"
         android:label="fragment_account"
         tools:layout="@layout/fragment_account" />
+    <fragment
+        android:id="@+id/itemUpdateFragment"
+        android:name="com.pascal.irfaan.shoppinglist.presentations.item.update.ItemUpdateFragment"
+        android:label="fragment_item_update"
+        tools:layout="@layout/fragment_item_update">
+        <action
+            android:id="@+id/action_itemUpdateFragment_to_viewListShopping"
+            app:destination="@id/viewListShopping"
+            />
+        <argument
+            android:name="item_update"
+            app:argType="com.pascal.irfaan.shoppinglist.models.Item" />
+    </fragment>
 </navigation>
