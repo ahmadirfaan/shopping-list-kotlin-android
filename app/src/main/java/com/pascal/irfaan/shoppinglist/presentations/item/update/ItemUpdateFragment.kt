@@ -68,7 +68,9 @@ class ItemUpdateFragment : Fragment() {
     }
 
     private fun subscribe() {
+        Log.i("MASUK NAVIGASI AWAL", "UPDATE NAVIGASI AWAL")
         viewModel.updateStatus.observe(this, {
+            Log.i("MASUK NAVIGASI", "UPDATE NAVIGASI")
             Navigation.findNavController(requireView()).navigate(R.id.action_itemUpdateFragment_to_viewListShopping)
         })
     }

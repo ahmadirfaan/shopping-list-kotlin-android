@@ -36,10 +36,6 @@ class ListItemViewModel(val itemRepository: ItemRepositoryImpl) : ViewModel(), I
         loadItemData()
     }
 
-    init {
-        loadItemData()
-    }
-
     fun getItemList(): ArrayList<Item> = itemRepository.list()
 
 

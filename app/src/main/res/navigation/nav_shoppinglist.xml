@@ -62,7 +62,8 @@
         <action
             android:id="@+id/action_itemUpdateFragment_to_viewListShopping"
             app:destination="@id/viewListShopping"
-            />
+            app:popUpTo="@id/viewListShopping"
+            app:popUpToInclusive="true" />
         <argument
             android:name="item_update"
             app:argType="com.pascal.irfaan.shoppinglist.models.Item" />

@@ -62,20 +62,6 @@ class ViewListShoppingFragment() : Fragment() {
         }
     }
 
-    override fun onPause() {
-        super.onPause()
-        Log.i("INI FRAGMENT VIEW LIST", "INI ON PAUSE")
-    }
-
-    override fun onResume() {
-        super.onResume()
-        Log.i("INI FRAGMENT VIEW LIST", "INI ON resume")
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.i("INI FRAGMENT VIEW LIST", "INI ON DESTROY")
-    }
 
 
     private fun initViewmodel() {
@@ -112,7 +98,6 @@ class ViewListShoppingFragment() : Fragment() {
             Navigation.findNavController(requireView()).navigate(R.id.action_viewListShopping_to_itemUpdateFragment, bundleOf("item_update" to it))
         })
     }
-
 
 
     companion object {
