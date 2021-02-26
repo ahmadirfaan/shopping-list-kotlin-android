@@ -1,5 +1,6 @@
 package com.pascal.irfaan.shoppinglist.presentations.item.list
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel

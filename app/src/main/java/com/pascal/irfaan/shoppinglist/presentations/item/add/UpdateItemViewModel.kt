@@ -1,4 +1,4 @@
-package com.pascal.irfaan.shoppinglist.presentations.item.update
+package com.pascal.irfaan.shoppinglist.presentations.item.add
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

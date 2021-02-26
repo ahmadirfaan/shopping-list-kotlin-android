@@ -8,7 +8,7 @@
 
     <fragment
         android:id="@+id/addItem"
-        android:name="com.pascal.irfaan.shoppinglist.presentations.item.add.AddItemFragment"
+        android:name="com.pascal.irfaan.shoppinglist.presentations.item.add.AddEditItemFragment"
         android:label="fragment_add_item"
         tools:layout="@layout/fragment_add_item">
         <action
@@ -16,6 +16,9 @@
             app:destination="@id/viewListShopping"
             app:enterAnim="@android:anim/slide_in_left"
             app:exitAnim="@android:anim/slide_out_right" />
+        <argument
+            android:name="item_update"
+            app:argType="com.pascal.irfaan.shoppinglist.models.Item" />
     </fragment>
     <fragment
         android:id="@+id/viewListShopping"
@@ -23,8 +26,8 @@
         android:label="fragment_view_list_shopping"
         tools:layout="@layout/fragment_view_list_shopping">
         <action
-            android:id="@+id/action_viewListShopping_to_itemUpdateFragment"
-            app:destination="@id/itemUpdateFragment" />
+            android:id="@+id/action_viewListShopping_to_addItem"
+            app:destination="@id/addItem" />
     </fragment>
 
     <fragment
@@ -54,18 +57,4 @@
         android:name="com.pascal.irfaan.shoppinglist.presentations.account.AccountFragment"
         android:label="fragment_account"
         tools:layout="@layout/fragment_account" />
-    <fragment
-        android:id="@+id/itemUpdateFragment"
-        android:name="com.pascal.irfaan.shoppinglist.presentations.item.update.ItemUpdateFragment"
-        android:label="fragment_item_update"
-        tools:layout="@layout/fragment_item_update">
-        <action
-            android:id="@+id/action_itemUpdateFragment_to_viewListShopping"
-            app:destination="@id/viewListShopping"
-            app:popUpTo="@id/viewListShopping"
-            app:popUpToInclusive="true" />
-        <argument
-            android:name="item_update"
-            app:argType="com.pascal.irfaan.shoppinglist.models.Item" />
-    </fragment>
 </navigation>

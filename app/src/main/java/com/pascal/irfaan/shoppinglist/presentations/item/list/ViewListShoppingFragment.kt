@@ -26,15 +26,12 @@ class ViewListShoppingFragment() : Fragment() {
 
     private lateinit var itemListViewAdapter: ItemListViewAdapter
     private lateinit var binding: FragmentViewListShoppingBinding
-    private lateinit var navController: NavController
     private lateinit var viewModel: ListItemViewModel
     private lateinit var loadingDialog: AlertDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initViewmodel()
-        viewModel.loadItemData()
-        binding = FragmentViewListShoppingBinding.inflate(layoutInflater)
         itemListViewAdapter = ItemListViewAdapter(viewModel)
         subscribe()
     }
@@ -44,28 +41,46 @@ class ViewListShoppingFragment() : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         loadingDialog = LoadingDialog.build(requireContext())
+        binding = FragmentViewListShoppingBinding.inflate(layoutInflater)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        navController = Navigation.findNavController(view)
+        viewModel.loadItemData()
         viewModel.validationItemList()
         binding.apply {
             backButtonToCreateItem.setOnClickListener {
                 view?.findNavController()?.popBackStack()
             }
-            itemListRecyclerView.apply {
-                layoutManager = LinearLayoutManager(requireContext())
-                adapter = itemListViewAdapter
+            addFabItem.setOnClickListener {
+                Navigation.findNavController(view).navigate(R.id.action_viewListShopping_to_addItem)
             }
         }
+
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.i("INI VIEW LIST FRAGMENT", "ON DESTROY")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.i("INI VIEW LIST FRAGMENT", "ON PAUSE")
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.i("INI VIEW LIST FRAGMENT", "ON RESUME")
+
     }
 
 
 
     private fun initViewmodel() {
-        viewModel = ViewModelProvider(requireActivity(), object : ViewModelProvider.Factory{
+        viewModel = ViewModelProvider(this, object : ViewModelProvider.Factory{
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                 val repo = ItemRepositoryImpl()
                 return ListItemViewModel(repo) as T
@@ -84,6 +99,12 @@ class ViewListShoppingFragment() : Fragment() {
                 }
                 ResourceStatus.SUCCESS -> {
                     loadingDialog.hide()
+                    binding.apply{
+                        itemListRecyclerView.apply {
+                            layoutManager = LinearLayoutManager(requireContext())
+                            adapter = itemListViewAdapter
+                        }
+                    }
                     Toast.makeText(requireContext(), "LIST ITEM DENGAN JUMLAH ${viewModel.getItemList().size}", Toast.LENGTH_SHORT).show()
                 }
                 ResourceStatus.FAILURE -> {
@@ -95,7 +116,7 @@ class ViewListShoppingFragment() : Fragment() {
             itemListViewAdapter.setItemList(it)
         })
         viewModel.itemUpdateLiveData.observe(this, {
-            Navigation.findNavController(requireView()).navigate(R.id.action_viewListShopping_to_itemUpdateFragment, bundleOf("item_update" to it))
+            Navigation.findNavController(requireView()).navigate(R.id.action_viewListShopping_to_addItem, bundleOf("item_update" to it))
         })
     }
 

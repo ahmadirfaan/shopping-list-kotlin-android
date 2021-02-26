@@ -3,7 +3,7 @@ package com.pascal.irfaan.shoppinglist.models
 import android.os.Parcel
 import android.os.Parcelable
 
-data class Item(val id : String, val shoppingDate:String, val itemName : String, val quantity:String, val notes:String) : Parcelable {
+data class Item(val id : String = "", val shoppingDate:String, val itemName : String, val quantity:String, val notes:String) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString()!!,
         parcel.readString()!!,
