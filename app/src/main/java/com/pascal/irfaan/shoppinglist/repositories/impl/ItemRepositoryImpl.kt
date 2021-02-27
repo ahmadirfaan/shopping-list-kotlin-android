@@ -2,6 +2,8 @@ package com.pascal.irfaan.shoppinglist.repositories.impl
 
 import com.pascal.irfaan.shoppinglist.models.Item
 import com.pascal.irfaan.shoppinglist.repositories.ItemRepository
+import java.util.*
+import kotlin.collections.ArrayList
 
 class ItemRepositoryImpl : ItemRepository{
     companion object {
@@ -9,7 +11,12 @@ class ItemRepositoryImpl : ItemRepository{
 
     }
     override fun add(item: Item) {
-        itemList.add(item)
+        if(item.id.isNullOrBlank()) {
+            val itemWithId = item.copy(id = UUID.randomUUID().toString())
+            itemList.add(itemWithId)
+        } else {
+            itemList.add(item)
+        }
     }
 
     override fun delete(item: Item) {

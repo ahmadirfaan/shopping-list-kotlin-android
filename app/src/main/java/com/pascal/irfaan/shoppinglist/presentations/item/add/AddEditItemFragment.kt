@@ -61,7 +61,7 @@ class AddEditItemFragment() : Fragment() {
                     inputShoppingDate.setText(shoppingDate)
                     inputQuantity.setText(quantity)
                     inputItemName.setText(itemName)
-                    inputNotes.setText(quantity)
+                    inputNotes.setText(notes)
                     inputShoppingDate.isEnabled = false
                     calendarButton.setOnClickListener {
                         DateDialog.show(requireContext(), { shoppingDate ->
@@ -160,18 +160,22 @@ class AddEditItemFragment() : Fragment() {
                         binding.inputNotes.text.toString()
                     )
                     listViewModel.addItemToList(item)
-                    Toast.makeText(requireContext(), "ADD ${item.itemName} SUCCESSFULLY", Toast.LENGTH_LONG).show()
+                    Toast.makeText(requireContext(), "ADD ${item.itemName} SUCCESSFULLY", Toast.LENGTH_SHORT).show()
                     clearEditText()
+                    navController.navigate(R.id.action_addItem_to_viewListShopping)
+
                 }
                 ResourceStatus.FAILURE -> {
                     loadingDialog.hide()
-                    Toast.makeText(requireContext(), it.message, Toast.LENGTH_LONG).show()
+                    Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT).show()
                     binding.addEditShoppingItemButton.isEnabled = true
                 }
             }
         })
         updateItemViewModel.updateStatus.observe(this, {
             Navigation.findNavController(requireView()).navigate(R.id.action_addItem_to_viewListShopping)
+            Toast.makeText(requireContext(), "UPDATE ${itemUpdate?.itemName} TO ${it.itemName} SUCCESSFULLY", Toast.LENGTH_LONG).show()
+
         })
     }
 
