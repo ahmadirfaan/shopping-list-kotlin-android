@@ -6,10 +6,8 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class ItemRepositoryImpl : ItemRepository{
-    companion object {
-        var itemList = ArrayList<Item>()
-
-    }
+    val itemList = makeItemsPaginationTest()
+    
     override fun add(item: Item) {
         if(item.id.isNullOrBlank()) {
             val itemWithId = item.copy(id = UUID.randomUUID().toString())
@@ -36,4 +34,13 @@ class ItemRepositoryImpl : ItemRepository{
     }
 
     override fun list(): ArrayList<Item> = itemList
+    
+    fun makeItemsPaginationTest(): ArrayList<Item> {
+        val itemsData = ArrayList<Item>()
+        for(i in 1..22) {
+            val items = Item(shoppingDate = "s + $i", itemName = "item $i", quantity =  "$i", notes = "note $i")
+            itemsData.add(items)
+        }
+        return itemsData
+    }
 }

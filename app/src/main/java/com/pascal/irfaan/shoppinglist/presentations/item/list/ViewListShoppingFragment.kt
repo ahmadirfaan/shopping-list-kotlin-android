@@ -11,7 +11,6 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,6 +18,7 @@ import com.pascal.irfaan.shoppinglist.R
 import com.pascal.irfaan.shoppinglist.databinding.FragmentViewListShoppingBinding
 import com.pascal.irfaan.shoppinglist.repositories.impl.ItemRepositoryImpl
 import com.pascal.irfaan.shoppinglist.presentations.components.LoadingDialog
+import com.pascal.irfaan.shoppinglist.utils.Pagination
 import com.pascal.irfaan.shoppinglist.utils.ResourceStatus
 
 
@@ -28,6 +28,11 @@ class ViewListShoppingFragment() : Fragment() {
     private lateinit var binding: FragmentViewListShoppingBinding
     private lateinit var viewModel: ListItemViewModel
     private lateinit var loadingDialog: AlertDialog
+
+    private val itemRepositoryImpl = ItemRepositoryImpl()
+    private val pagination = Pagination(itemRepositoryImpl)
+    private val totalPages = pagination.TOTAL_NUM_ITEMS / pagination.ITEMS_PER_PAGE
+    private var currentPage = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,14 +52,25 @@ class ViewListShoppingFragment() : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.loadItemData()
         viewModel.validationItemList()
+        viewModel.loadItemData()
+        toggleButtons()
         binding.apply {
             backButtonToCreateItem.setOnClickListener {
                 view?.findNavController()?.popBackStack()
             }
             addFabItem.setOnClickListener {
                 Navigation.findNavController(view).navigate(R.id.action_viewListShopping_to_addItem)
+            }
+            nextFabItem.setOnClickListener {
+                currentPage++
+                subscribe()
+                toggleButtons()
+            }
+            prevFabItem.setOnClickListener {
+                currentPage--
+                subscribe()
+                toggleButtons()
             }
         }
 
@@ -87,7 +103,7 @@ class ViewListShoppingFragment() : Fragment() {
             }
 
         }).get(ListItemViewModel::class.java)
-        Log.i("INI VIEW LIST CHECK ITEMLIST", "${ItemRepositoryImpl.itemList}")
+//        Log.i("INI VIEW LIST CHECK ITEMLIST", "${ItemRepositoryImpl.itemList}")
         Log.i("INI VIEW LIST CHECK ITEMLIST LIVE DATA", "${viewModel.itemListLiveData.value.toString()}")
     }
 
@@ -113,11 +129,31 @@ class ViewListShoppingFragment() : Fragment() {
             }
         })
         viewModel.itemListLiveData.observe(this, {
-            itemListViewAdapter.setItemList(it)
+            val paginationData = pagination.generatePage(currentPage)
+            itemListViewAdapter.setItemList(paginationData)
         })
         viewModel.itemUpdateLiveData.observe(this, {
             Navigation.findNavController(requireView()).navigate(R.id.action_viewListShopping_to_addItem, bundleOf("item_update" to it))
         })
+    }
+
+    private fun toggleButtons() {
+        if (currentPage == totalPages) {
+            binding.apply {
+                nextFabItem.isEnabled = false
+                prevFabItem.isEnabled = true
+            }
+        } else if (currentPage == 0) {
+            binding.apply {
+                nextFabItem.isEnabled = true
+                prevFabItem.isEnabled = false
+            }
+        } else if (currentPage >= 1 && currentPage <= totalPages) {
+            binding.apply {
+                nextFabItem.isEnabled = true
+                prevFabItem.isEnabled = true
+            }
+        }
     }
 
 
