@@ -16,8 +16,8 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.pascal.irfaan.shoppinglist.R
 import com.pascal.irfaan.shoppinglist.databinding.FragmentViewListShoppingBinding
-import com.pascal.irfaan.shoppinglist.repositories.impl.ItemRepositoryImpl
 import com.pascal.irfaan.shoppinglist.presentations.components.LoadingDialog
+import com.pascal.irfaan.shoppinglist.repositories.impl.ItemRepositoryImpl
 import com.pascal.irfaan.shoppinglist.utils.Pagination
 import com.pascal.irfaan.shoppinglist.utils.ResourceStatus
 
@@ -32,7 +32,7 @@ class ViewListShoppingFragment() : Fragment() {
     private val itemRepositoryImpl = ItemRepositoryImpl()
     private val pagination = Pagination(itemRepositoryImpl)
     private val totalPages = pagination.TOTAL_NUM_ITEMS / pagination.ITEMS_PER_PAGE
-    private var currentPage = 0
+    private var currentPage = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,6 +56,11 @@ class ViewListShoppingFragment() : Fragment() {
         viewModel.loadItemData()
         toggleButtons()
         binding.apply {
+            if (totalPages ==  0 && totalPages == 1) {
+                tvPage.text = "$currentPage of 1"
+            } else {
+                tvPage.text = "$currentPage of ${totalPages + 1}"
+            }
             backButtonToCreateItem.setOnClickListener {
                 view?.findNavController()?.popBackStack()
             }
@@ -64,15 +69,18 @@ class ViewListShoppingFragment() : Fragment() {
             }
             nextFabItem.setOnClickListener {
                 currentPage++
+                tvPage.text = "$currentPage of ${totalPages + 1}"
                 subscribe()
                 toggleButtons()
             }
             prevFabItem.setOnClickListener {
                 currentPage--
+                tvPage.text = "$currentPage of ${totalPages + 1}"
                 subscribe()
                 toggleButtons()
             }
         }
+
 
     }
 
@@ -94,9 +102,8 @@ class ViewListShoppingFragment() : Fragment() {
     }
 
 
-
     private fun initViewmodel() {
-        viewModel = ViewModelProvider(this, object : ViewModelProvider.Factory{
+        viewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                 val repo = ItemRepositoryImpl()
                 return ListItemViewModel(repo) as T
@@ -115,7 +122,7 @@ class ViewListShoppingFragment() : Fragment() {
                 }
                 ResourceStatus.SUCCESS -> {
                     loadingDialog.hide()
-                    binding.apply{
+                    binding.apply {
                         itemListRecyclerView.apply {
                             layoutManager = LinearLayoutManager(requireContext())
                             adapter = itemListViewAdapter
@@ -131,6 +138,7 @@ class ViewListShoppingFragment() : Fragment() {
         viewModel.itemListLiveData.observe(this, {
             val paginationData = pagination.generatePage(currentPage)
             itemListViewAdapter.setItemList(paginationData)
+//            Log.i("INI VIEW LIST LIHAT JUMLAH DATA", "DATA ITEMLIST ADA ${ItemRepositoryImpl.itemList.size}")
         })
         viewModel.itemUpdateLiveData.observe(this, {
             Navigation.findNavController(requireView()).navigate(R.id.action_viewListShopping_to_addItem, bundleOf("item_update" to it))
@@ -138,12 +146,12 @@ class ViewListShoppingFragment() : Fragment() {
     }
 
     private fun toggleButtons() {
-        if (currentPage == totalPages) {
+        if ( (currentPage - 1) == totalPages && totalPages != 0) {
             binding.apply {
                 nextFabItem.isEnabled = false
                 prevFabItem.isEnabled = true
             }
-        } else if (currentPage == 0) {
+        } else if (currentPage == 1  && totalPages != 0) {
             binding.apply {
                 nextFabItem.isEnabled = true
                 prevFabItem.isEnabled = false
@@ -152,6 +160,11 @@ class ViewListShoppingFragment() : Fragment() {
             binding.apply {
                 nextFabItem.isEnabled = true
                 prevFabItem.isEnabled = true
+            }
+        } else {
+            binding.apply {
+                nextFabItem.isEnabled = false
+                prevFabItem.isEnabled = false
             }
         }
     }

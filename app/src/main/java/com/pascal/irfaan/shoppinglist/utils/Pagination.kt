@@ -12,11 +12,11 @@ class Pagination(val itemRepositoryImpl: ItemRepositoryImpl) {
     val LAST_PAGE = TOTAL_NUM_ITEMS / ITEMS_PER_PAGE
 
     fun generatePage(currentPage: Int): ArrayList<Item> {
-
-        var startItem = currentPage * ITEMS_PER_PAGE
+        val cp = currentPage - 1
+        var startItem = cp * ITEMS_PER_PAGE
         var numOfData = ITEMS_PER_PAGE
         var pageData = ArrayList<Item>()
-        if (currentPage == LAST_PAGE && ITEMS_PER_PAGE > 0) {
+        if (cp == LAST_PAGE && ITEMS_PER_PAGE > 0) {
             val lastdata = (startItem + ITEM_REMAINING) - 1
             for (i in startItem..lastdata) {
                 pageData.add(ITEMS_DATA[i])
@@ -27,7 +27,7 @@ class Pagination(val itemRepositoryImpl: ItemRepositoryImpl) {
                 pageData.add(ITEMS_DATA[i])
             }
         }
-        return  pageData
+        return pageData
     }
 }
 

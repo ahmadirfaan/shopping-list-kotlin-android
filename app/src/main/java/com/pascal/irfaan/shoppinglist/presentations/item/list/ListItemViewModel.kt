@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.pascal.irfaan.shoppinglist.models.Item
+import com.pascal.irfaan.shoppinglist.repositories.ItemRepository
 import com.pascal.irfaan.shoppinglist.utils.ItemClickListener
 import com.pascal.irfaan.shoppinglist.repositories.impl.ItemRepositoryImpl
 import com.pascal.irfaan.shoppinglist.utils.ResourceState
@@ -34,6 +35,7 @@ class ListItemViewModel(val itemRepository: ItemRepositoryImpl) : ViewModel(), I
 
     fun addItemToList(item : Item) {
         itemRepository.add(item)
+//        Log.i("INI VIEW LIST LIHAT JUMLAH DATA", "DATA ITEMLIST ADA ${ItemRepositoryImpl.itemList.size}")
         loadItemData()
     }
 

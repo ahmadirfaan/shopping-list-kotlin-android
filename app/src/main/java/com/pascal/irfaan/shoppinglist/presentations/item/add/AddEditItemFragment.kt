@@ -162,7 +162,6 @@ class AddEditItemFragment() : Fragment() {
                     listViewModel.addItemToList(item)
                     Toast.makeText(requireContext(), "ADD ${item.itemName} SUCCESSFULLY", Toast.LENGTH_SHORT).show()
                     clearEditText()
-                    navController.navigate(R.id.action_addItem_to_viewListShopping)
 
                 }
                 ResourceStatus.FAILURE -> {

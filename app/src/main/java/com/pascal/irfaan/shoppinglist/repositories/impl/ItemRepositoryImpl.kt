@@ -6,7 +6,11 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class ItemRepositoryImpl : ItemRepository{
-    val itemList = makeItemsPaginationTest()
+    companion object {
+        val itemList = ArrayList<Item>()
+    }
+
+//    val itemList = makeItemsPaginationTest()
     
     override fun add(item: Item) {
         if(item.id.isNullOrBlank()) {
