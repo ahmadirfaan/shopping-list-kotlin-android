@@ -1,6 +1,6 @@
 package com.pascal.irfaan.shoppinglist.utils
 
-import com.pascal.irfaan.shoppinglist.models.Item
+import com.pascal.irfaan.shoppinglist.data.models.Item
 
 interface ItemClickListener {
 

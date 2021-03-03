@@ -11,13 +11,14 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.pascal.irfaan.shoppinglist.R
+import com.pascal.irfaan.shoppinglist.data.ItemDatabase
+import com.pascal.irfaan.shoppinglist.data.dao.ItemDao
 import com.pascal.irfaan.shoppinglist.databinding.FragmentViewListShoppingBinding
-import com.pascal.irfaan.shoppinglist.repositories.impl.ItemRepositoryImpl
+import com.pascal.irfaan.shoppinglist.data.dao.impl.ItemRepositories
 import com.pascal.irfaan.shoppinglist.presentations.components.LoadingDialog
 import com.pascal.irfaan.shoppinglist.utils.ResourceStatus
 
@@ -47,7 +48,6 @@ class ViewListShoppingFragment() : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.loadItemData()
         viewModel.validationItemList()
         binding.apply {
             backButtonToCreateItem.setOnClickListener {
@@ -82,13 +82,12 @@ class ViewListShoppingFragment() : Fragment() {
     private fun initViewmodel() {
         viewModel = ViewModelProvider(this, object : ViewModelProvider.Factory{
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                val repo = ItemRepositoryImpl()
+                val itemDao = ItemDatabase.getDatabase(requireContext()).itemDao()
+                val repo = ItemRepositories(itemDao)
                 return ListItemViewModel(repo) as T
             }
 
         }).get(ListItemViewModel::class.java)
-        Log.i("INI VIEW LIST CHECK ITEMLIST", "${ItemRepositoryImpl.itemList}")
-        Log.i("INI VIEW LIST CHECK ITEMLIST LIVE DATA", "${viewModel.itemListLiveData.value.toString()}")
     }
 
     private fun subscribe() {
@@ -105,19 +104,20 @@ class ViewListShoppingFragment() : Fragment() {
                             adapter = itemListViewAdapter
                         }
                     }
-                    Toast.makeText(requireContext(), "LIST ITEM DENGAN JUMLAH ${viewModel.getItemList().size}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "LIST ITEM DENGAN JUMLAH ${viewModel.getAllItems.value?.size}", Toast.LENGTH_SHORT).show()
                 }
                 ResourceStatus.FAILURE -> {
                     loadingDialog.hide()
                 }
             }
         })
-        viewModel.itemListLiveData.observe(this, {
-            itemListViewAdapter.setItemList(it)
-        })
         viewModel.itemUpdateLiveData.observe(this, {
             Navigation.findNavController(requireView()).navigate(R.id.action_viewListShopping_to_addItem, bundleOf("item_update" to it))
         })
+        viewModel.getAllItems.observe(this, {
+            itemListViewAdapter.setItemList(it)
+        })
+
     }
 
 

@@ -18,7 +18,7 @@
             app:exitAnim="@android:anim/slide_out_right" />
         <argument
             android:name="item_update"
-            app:argType="com.pascal.irfaan.shoppinglist.models.Item" />
+            app:argType="com.pascal.irfaan.shoppinglist.data.models.Item" />
     </fragment>
     <fragment
         android:id="@+id/viewListShopping"

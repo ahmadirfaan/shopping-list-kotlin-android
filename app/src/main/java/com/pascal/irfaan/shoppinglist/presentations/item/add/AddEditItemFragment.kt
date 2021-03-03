@@ -13,11 +13,12 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import com.pascal.irfaan.shoppinglist.R
+import com.pascal.irfaan.shoppinglist.data.ItemDatabase
 import com.pascal.irfaan.shoppinglist.databinding.FragmentAddItemBinding
-import com.pascal.irfaan.shoppinglist.models.Item
+import com.pascal.irfaan.shoppinglist.data.models.Item
 import com.pascal.irfaan.shoppinglist.presentations.components.LoadingDialog
 import com.pascal.irfaan.shoppinglist.presentations.item.list.ListItemViewModel
-import com.pascal.irfaan.shoppinglist.repositories.impl.ItemRepositoryImpl
+import com.pascal.irfaan.shoppinglist.data.dao.impl.ItemRepositories
 import com.pascal.irfaan.shoppinglist.utils.DateDialog
 import com.pascal.irfaan.shoppinglist.utils.ResourceStatus
 import java.text.SimpleDateFormat
@@ -31,7 +32,6 @@ class AddEditItemFragment() : Fragment() {
 
     private lateinit var listViewModel: ListItemViewModel
     private lateinit var addItemViewModel: AddItemViewModel
-    private lateinit var updateItemViewModel: UpdateItemViewModel
 
     private lateinit var loadingDialog: AlertDialog
     private var formatDate = SimpleDateFormat("dd MMMM YYYY", Locale.US)
@@ -59,23 +59,23 @@ class AddEditItemFragment() : Fragment() {
             binding.apply {
                 itemUpdate?.apply {
                     inputShoppingDate.setText(shoppingDate)
-                    inputQuantity.setText(quantity)
+                    inputQuantity.setText(quantity.toString())
                     inputItemName.setText(itemName)
                     inputNotes.setText(notes)
                     inputShoppingDate.isEnabled = false
                     calendarButton.setOnClickListener {
-                        DateDialog.show(requireContext(), { shoppingDate ->
+                        DateDialog.show(requireContext()) { shoppingDate ->
                             inputShoppingDate.setText(shoppingDate)
-                        })
+                        }
                     }
                     addEditShoppingItemButton.setOnClickListener {
-                        val updateItem = copy(
+                        val updatedItem = copy(
                             shoppingDate = inputShoppingDate.text.toString(),
                             itemName = inputItemName.text.toString(),
-                            quantity = inputQuantity.text.toString(),
+                            quantity = inputQuantity.text.toString().toInt(),
                             notes = inputNotes.text.toString()
                         )
-                        updateItemViewModel.OnUpdate(updateItem)
+                        listViewModel.updateItem(updatedItem)
                     }
                 }
                 titleShopping.setText("EDIT ITEM")
@@ -88,9 +88,9 @@ class AddEditItemFragment() : Fragment() {
                 val getDate = Calendar.getInstance()
                 inputShoppingDate.setText(formatDate.format(getDate.time))
                 calendarButton.setOnClickListener {
-                    DateDialog.show(requireContext(), { taskDate ->
+                    DateDialog.show(requireContext()) { taskDate ->
                         inputShoppingDate.setText(taskDate)
-                    })
+                    }
                 }
                 addEditShoppingItemButton.setOnClickListener {
                     addItemViewModel.inputValidation(
@@ -126,18 +126,12 @@ class AddEditItemFragment() : Fragment() {
     private fun initViewModel() {
         listViewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                val repo = ItemRepositoryImpl()
+                val itemDao = ItemDatabase.getDatabase(requireContext()).itemDao()
+                val repo = ItemRepositories(itemDao)
                 return ListItemViewModel(repo) as T
             }
 
         }).get(ListItemViewModel::class.java)
-        updateItemViewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                val repo = ItemRepositoryImpl()
-                return UpdateItemViewModel(repo) as T
-            }
-
-        }).get(UpdateItemViewModel::class.java)
         addItemViewModel = ViewModelProvider(this).get(AddItemViewModel::class.java)
     }
 
@@ -153,17 +147,14 @@ class AddEditItemFragment() : Fragment() {
                     loadingDialog.hide()
                     binding.addEditShoppingItemButton.isEnabled = true
                     val item = Item(
-                        "",
-                        binding.inputShoppingDate.text.toString(),
-                        binding.inputItemName.text.toString(),
-                        binding.inputQuantity.text.toString(),
-                        binding.inputNotes.text.toString()
+                        shoppingDate = binding.inputShoppingDate.text.toString(),
+                        itemName = binding.inputItemName.text.toString(),
+                        quantity = binding.inputQuantity.text.toString().toInt(),
+                        notes = binding.inputNotes.text.toString()
                     )
-                    listViewModel.addItemToList(item)
+                    listViewModel.addItem(item)
                     Toast.makeText(requireContext(), "ADD ${item.itemName} SUCCESSFULLY", Toast.LENGTH_SHORT).show()
                     clearEditText()
-                    navController.navigate(R.id.action_addItem_to_viewListShopping)
-
                 }
                 ResourceStatus.FAILURE -> {
                     loadingDialog.hide()
@@ -172,10 +163,9 @@ class AddEditItemFragment() : Fragment() {
                 }
             }
         })
-        updateItemViewModel.updateStatus.observe(this, {
+        listViewModel.itemUpdateLiveData.observe(this, {
             Navigation.findNavController(requireView()).navigate(R.id.action_addItem_to_viewListShopping)
             Toast.makeText(requireContext(), "UPDATE ${itemUpdate?.itemName} TO ${it.itemName} SUCCESSFULLY", Toast.LENGTH_LONG).show()
-
         })
     }
 

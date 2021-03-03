@@ -4,13 +4,12 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.pascal.irfaan.shoppinglist.R
-import com.pascal.irfaan.shoppinglist.presentations.item.list.ItemListViewHolder
-import com.pascal.irfaan.shoppinglist.models.Item
+import com.pascal.irfaan.shoppinglist.data.models.Item
 import com.pascal.irfaan.shoppinglist.utils.ItemClickListener
 
 class ItemListViewAdapter(val itemClickListener: ItemClickListener) : RecyclerView.Adapter<ItemListViewHolder>() {
 
-    private var items = ArrayList<Item>()
+    private var data : List<Item> = ArrayList<Item>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemListViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(
@@ -20,15 +19,14 @@ class ItemListViewAdapter(val itemClickListener: ItemClickListener) : RecyclerVi
     }
 
     override fun onBindViewHolder(holder: ItemListViewHolder, position: Int) {
-        val product = items[position]
+        val product = data[position]
         holder.bind(product)
     }
 
-    override fun getItemCount(): Int =  items.size
+    override fun getItemCount(): Int =  data.size
 
     fun setItemList(newItemList : List<Item>) {
-        items.clear()
-        items.addAll(newItemList)
+        this.data = newItemList
         notifyDataSetChanged()
     }
 

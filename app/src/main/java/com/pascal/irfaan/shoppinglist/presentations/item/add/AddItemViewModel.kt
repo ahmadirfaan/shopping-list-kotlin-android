@@ -4,9 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.pascal.irfaan.shoppinglist.utils.ResourceState
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 class AddItemViewModel : ViewModel(){
 
@@ -18,7 +16,7 @@ class AddItemViewModel : ViewModel(){
 
 
     fun inputValidation(vararg input: String) {
-        GlobalScope.launch {
+        CoroutineScope(Dispatchers.IO).launch {
             _inputValidation.postValue(ResourceState.loading())
             delay(2000)
             val check = ArrayList<Int>()

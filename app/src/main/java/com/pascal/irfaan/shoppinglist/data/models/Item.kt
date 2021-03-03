@@ -1,14 +1,24 @@
-package com.pascal.irfaan.shoppinglist.models
+package com.pascal.irfaan.shoppinglist.data.models
 
 import android.os.Parcel
 import android.os.Parcelable
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
-data class Item(val id : String = "", val shoppingDate:String, val itemName : String, val quantity:String, val notes:String) : Parcelable {
+@Entity(tableName = "items")
+data class Item(
+    @PrimaryKey(autoGenerate = true) val id : Int = 0,
+    @ColumnInfo(name = "shopping_date") val shoppingDate:String,
+    @ColumnInfo(name = "item_name") val itemName : String,
+    @ColumnInfo(name = "quantity") val quantity:Int,
+    @ColumnInfo(name = "notes") val notes:String) : Parcelable {
+
     constructor(parcel: Parcel) : this(
+        parcel.readInt()!!,
         parcel.readString()!!,
         parcel.readString()!!,
-        parcel.readString()!!,
-        parcel.readString()!!,
+        parcel.readInt()!!,
         parcel.readString()!!
     ) {
     }
@@ -16,10 +26,10 @@ data class Item(val id : String = "", val shoppingDate:String, val itemName : St
     override fun describeContents(): Int = 0
 
     override fun writeToParcel(dest: Parcel?, flags: Int) {
-        dest?.writeString(id)
+        dest?.writeInt(id)
         dest?.writeString(itemName)
         dest?.writeString(shoppingDate)
-        dest?.writeString(quantity)
+        dest?.writeInt(quantity)
         dest?.writeString(notes)
     }
 
