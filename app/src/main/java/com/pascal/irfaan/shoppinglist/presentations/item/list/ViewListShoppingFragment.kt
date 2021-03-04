@@ -16,7 +16,6 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.pascal.irfaan.shoppinglist.R
 import com.pascal.irfaan.shoppinglist.data.ItemDatabase
-import com.pascal.irfaan.shoppinglist.data.dao.ItemDao
 import com.pascal.irfaan.shoppinglist.databinding.FragmentViewListShoppingBinding
 import com.pascal.irfaan.shoppinglist.data.dao.impl.ItemRepositories
 import com.pascal.irfaan.shoppinglist.presentations.components.LoadingDialog
@@ -29,12 +28,18 @@ class ViewListShoppingFragment() : Fragment() {
     private lateinit var binding: FragmentViewListShoppingBinding
     private lateinit var viewModel: ListItemViewModel
     private lateinit var loadingDialog: AlertDialog
+    private var currentPage = 1
+    private var totalPages = 0
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initViewmodel()
         itemListViewAdapter = ItemListViewAdapter(viewModel)
+        viewModel.generatePage(currentPage)
         subscribe()
+        totalPages = viewModel.TOTAL_NUM_ITEMS?.div(viewModel.ITEMS_PER_PAGE) ?: 0
+
     }
 
     override fun onCreateView(
@@ -55,6 +60,18 @@ class ViewListShoppingFragment() : Fragment() {
             }
             addFabItem.setOnClickListener {
                 Navigation.findNavController(view).navigate(R.id.action_viewListShopping_to_addItem)
+            }
+            nextFabItem.setOnClickListener {
+                currentPage++
+                subscribe()
+                toggleButtons()
+                viewModel.generatePage(currentPage)
+            }
+            prevFabItem.setOnClickListener {
+                currentPage--
+                subscribe()
+                toggleButtons()
+                viewModel.generatePage(currentPage)
             }
         }
 
@@ -114,10 +131,34 @@ class ViewListShoppingFragment() : Fragment() {
         viewModel.itemUpdateLiveData.observe(this, {
             Navigation.findNavController(requireView()).navigate(R.id.action_viewListShopping_to_addItem, bundleOf("item_update" to it))
         })
-        viewModel.getAllItems.observe(this, {
+        viewModel.paginationData.observe(this, {
             itemListViewAdapter.setItemList(it)
         })
 
+    }
+
+    private fun toggleButtons() {
+        if ( (currentPage - 1) == totalPages && totalPages != 0) {
+            binding.apply {
+                nextFabItem.isEnabled = false
+                prevFabItem.isEnabled = true
+            }
+        } else if (currentPage == 1  && totalPages != 0) {
+            binding.apply {
+                nextFabItem.isEnabled = true
+                prevFabItem.isEnabled = false
+            }
+        } else if (currentPage >= 1 && currentPage <= totalPages!!) {
+            binding.apply {
+                nextFabItem.isEnabled = true
+                prevFabItem.isEnabled = true
+            }
+        } else {
+            binding.apply {
+                nextFabItem.isEnabled = false
+                prevFabItem.isEnabled = false
+            }
+        }
     }
 
 

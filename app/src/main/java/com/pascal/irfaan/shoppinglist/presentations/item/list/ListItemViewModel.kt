@@ -17,8 +17,20 @@ class ListItemViewModel(private val itemRepository: ItemRepositories) : ViewMode
         get() {
             return _validationItemList
         }
-
     val getAllItems = itemRepository.getAllItems
+    val TOTAL_NUM_ITEMS = getAllItems.value?.size
+    val ITEMS_DATA = getAllItems.value
+    val ITEMS_PER_PAGE = 5
+    val ITEM_REMAINING = TOTAL_NUM_ITEMS?.rem(ITEMS_PER_PAGE)
+    val LAST_PAGE = TOTAL_NUM_ITEMS?.div(ITEMS_PER_PAGE)
+
+
+    private var _paginationData = MutableLiveData<List<Item>>()
+    val paginationData: LiveData<List<Item>>
+        get() {
+            return _paginationData
+        }
+
     private var _itemUpdateLiveData = MutableLiveData<Item>()
     val itemUpdateLiveData: LiveData<Item>
         get() {
@@ -61,6 +73,32 @@ class ListItemViewModel(private val itemRepository: ItemRepositories) : ViewMode
             itemRepository.deleteAllItem()
         }
     }
+
+
+
+    fun generatePage(currentPage: Int): List<Item> {
+        val cp = currentPage - 1
+        var startItem = cp * ITEMS_PER_PAGE
+        var numOfData = ITEMS_PER_PAGE
+        var pageData = ArrayList<Item>()
+        if (cp == LAST_PAGE && ITEMS_PER_PAGE > 0) {
+            val lastdata = (startItem + ITEM_REMAINING!!) - 1
+            for (i in startItem..lastdata) {
+                ITEMS_DATA?.get(i)?.let {
+                    pageData.add(it) }
+            }
+        } else {
+            val lastdata = (startItem + numOfData) - 1
+            for (i in startItem..lastdata) {
+                ITEMS_DATA?.get(i)?.let {
+                    pageData.add(it)
+                }
+            }
+        }
+        _paginationData.value = pageData
+        return pageData
+    }
+
 
 
     override fun onDelete(item: Item) {
