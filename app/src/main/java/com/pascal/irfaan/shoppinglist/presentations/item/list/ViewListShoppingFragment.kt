@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.pascal.irfaan.shoppinglist.R
 import com.pascal.irfaan.shoppinglist.data.dao.ItemDatabase
@@ -125,6 +126,25 @@ class ViewListShoppingFragment() : Fragment() {
                     Toast.makeText(requireContext(), "DELETED ITEM with id : ${deleted.id} and name : ${deleted.itemName}", Toast.LENGTH_SHORT).show()
                     viewModel.getAllItemListData()
                     loadingDialog.hide()
+                }
+                ResourceStatus.FAILURE -> {
+                    loadingDialog.hide()
+                    Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT).show()
+                }
+            }
+        })
+        viewModel.itemFindByIdLiveData.observe(this, {
+            when(it.status) {
+                ResourceStatus.LOADING -> {
+                    loadingDialog.show()
+                }
+                ResourceStatus.SUCCESS -> {
+                    val response = it.data as ItemsResponse
+                    val findItemById = response.data
+                    val bundle = bundleOf("item_update" to findItemById)
+                    Navigation.findNavController(requireView()).navigate(R.id.action_viewListShopping_to_addItem, bundle)
+                    loadingDialog.hide()
+
                 }
                 ResourceStatus.FAILURE -> {
                     loadingDialog.hide()

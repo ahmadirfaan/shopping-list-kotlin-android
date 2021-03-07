@@ -14,6 +14,7 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import com.pascal.irfaan.shoppinglist.R
 import com.pascal.irfaan.shoppinglist.data.models.Item
+import com.pascal.irfaan.shoppinglist.data.models.ItemsEntity
 import com.pascal.irfaan.shoppinglist.data.models.ItemsRequest
 import com.pascal.irfaan.shoppinglist.data.models.ItemsResponse
 import com.pascal.irfaan.shoppinglist.data.repositories.impl.ItemRepositoriesImpl
@@ -23,11 +24,12 @@ import com.pascal.irfaan.shoppinglist.presentations.item.list.ListItemViewModel
 import com.pascal.irfaan.shoppinglist.utils.DateDialog
 import com.pascal.irfaan.shoppinglist.utils.ResourceStatus
 import java.text.SimpleDateFormat
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 class AddEditItemFragment() : Fragment() {
 
-    private var itemUpdate: Item? = null
+    private var itemUpdate: ItemsEntity? = null
     private lateinit var binding: FragmentAddItemBinding
     private lateinit var navController: NavController
 
@@ -59,7 +61,12 @@ class AddEditItemFragment() : Fragment() {
         if (itemUpdate != null) {
             binding.apply {
                 itemUpdate?.apply {
-                    inputShoppingDate.setText(shoppingDate)
+                    val calendar = Calendar.getInstance()
+                    val dateShopSubString = dateShop.substring(0,10)
+                    val sdf = SimpleDateFormat("yyyy-MM-dd")
+                    calendar.time = sdf.parse(dateShopSubString)
+                    val stringDate = formatDate.format(calendar.time)
+                    inputShoppingDate.setText(stringDate)
                     inputQuantity.setText(quantity.toString())
                     inputItemName.setText(itemName)
                     inputNotes.setText(notes)
@@ -70,13 +77,14 @@ class AddEditItemFragment() : Fragment() {
                         }
                     }
                     addEditShoppingItemButton.setOnClickListener {
-                        val updatedItem = copy(
-                            shoppingDate = inputShoppingDate.text.toString(),
+                        val itemId = itemUpdate?.id!!
+                        val updatedItem = ItemsRequest(
+                            dateShop = inputShoppingDate.text.toString(),
                             itemName = inputItemName.text.toString(),
                             quantity = inputQuantity.text.toString().toInt(),
                             notes = inputNotes.text.toString()
                         )
-//                        listViewModel.updateItem(updatedItem)
+                        addItemViewModel.updateItemById(itemId, updatedItem)
                     }
                 }
                 titleShopping.setText("EDIT ITEM")
@@ -178,7 +186,24 @@ class AddEditItemFragment() : Fragment() {
                 ResourceStatus.SUCCESS -> {
                     val response = it.data as ItemsResponse
                     val itemName = response.data.itemName
+                    clearEditText()
                     Toast.makeText(requireContext(), "Add item with $itemName", Toast.LENGTH_LONG).show()
+                }
+                ResourceStatus.FAILURE -> {
+                    Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT).show()
+                }
+                ResourceStatus.LOADING -> {
+                    Toast.makeText(requireContext(), "Waiting for Response", Toast.LENGTH_SHORT).show()
+                }
+            }
+        })
+        addItemViewModel.updateItemShoppingLiveData.observe(this, {
+            when(it.status) {
+                ResourceStatus.SUCCESS -> {
+                    val response = it.data as ItemsResponse
+                    val itemName = response.data.itemName
+                    Toast.makeText(requireContext(), "Update item with $itemName", Toast.LENGTH_LONG).show()
+                    Navigation.findNavController(requireView()).navigate(R.id.action_addItem_to_viewListShopping)
                 }
                 ResourceStatus.FAILURE -> {
                     Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT).show()

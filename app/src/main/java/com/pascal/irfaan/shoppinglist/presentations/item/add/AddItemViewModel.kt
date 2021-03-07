@@ -25,6 +25,12 @@ class AddItemViewModel(private val repository: ItemsRepository) : ViewModel() {
             return _addItemShoppingLiveData
         }
 
+    private var _updateItemShoppingLiveData = MutableLiveData<ResourceState>()
+    val updateItemShoppingLiveData : LiveData<ResourceState>
+        get() {
+            return _updateItemShoppingLiveData
+        }
+
 
     fun inputValidation(vararg input: String) {
         CoroutineScope(Dispatchers.IO).launch {
@@ -56,6 +62,21 @@ class AddItemViewModel(private val repository: ItemsRepository) : ViewModel() {
                 })
             } else {
                 _addItemShoppingLiveData.postValue(ResourceState.failure(response.message()))
+            }
+        }
+    }
+
+    fun updateItemById(id : Int, request : ItemsRequest) {
+        CoroutineScope(Dispatchers.IO).launch {
+            _updateItemShoppingLiveData.postValue(ResourceState.loading())
+            val response = repository.updateItemById(id, request)
+            if(response.isSuccessful) {
+                val itemResponse = response.body()
+                _updateItemShoppingLiveData.postValue(itemResponse?.let {
+                    ResourceState.success(it)
+                })
+            } else {
+                _updateItemShoppingLiveData.postValue(ResourceState.failure(response.message()))
             }
         }
     }

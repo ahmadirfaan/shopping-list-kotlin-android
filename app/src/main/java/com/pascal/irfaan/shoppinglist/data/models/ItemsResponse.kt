@@ -13,7 +13,7 @@ data class ItemsResponse(
 	val data: ItemsEntity,
 
 	@field:SerializedName("message")
-	val message: Any,
+	val message: String,
 
 	@field:SerializedName("timestamp")
 	val timestamp: String

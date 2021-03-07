@@ -63,9 +63,11 @@ class ListItemViewModel(private val itemRepository: ItemsRepository) : ViewModel
         CoroutineScope(Dispatchers.Main).launch {
             _itemFindByIdLiveData.postValue(ResourceState.loading())
             val response = itemRepository.findItemById(item.id)
-            val responseBody = response.body()
+            val responseBody = response.body()!!
             if(response.isSuccessful) {
-                _itemFindByIdLiveData.postValue()
+                _itemFindByIdLiveData.postValue(ResourceState.success(responseBody))
+            } else {
+                _itemFindByIdLiveData.postValue(ResourceState.failure("${responseBody.message}"))
             }
         }
     }

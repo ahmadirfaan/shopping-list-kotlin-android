@@ -25,4 +25,8 @@ class ItemRepositoriesImpl() : ItemsRepository{
         return RetrofitInstance.shoppingApi.findItemById(id)
     }
 
+    override suspend fun updateItemById(id: Int, request: ItemsRequest): Response<ItemsResponse> {
+        return RetrofitInstance.shoppingApi.updateItemById(id, request)
+    }
+
 }

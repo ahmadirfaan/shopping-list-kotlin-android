@@ -4,23 +4,13 @@ import com.pascal.irfaan.shoppinglist.data.models.ItemsRequest
 import com.pascal.irfaan.shoppinglist.data.models.ItemsResponse
 import com.pascal.irfaan.shoppinglist.data.models.ResponsePagination
 import retrofit2.Response
-import retrofit2.http.*
+import retrofit2.http.Body
+import retrofit2.http.Path
 
-interface ShoppingApi {
-
-    @GET("/shopping?size=15")
+interface ItemRepositoryApi {
     suspend fun getAllShoppingList(): Response<ResponsePagination>
-
-    @POST("/shopping")
-    suspend fun addItemShopping(@Body request : ItemsRequest): Response<ItemsResponse>
-
-    @DELETE("/shopping/{id}")
-    suspend fun deleteItemShopping(@Path("id") id : Int) : Response<ItemsResponse>
-
-    @GET("/shopping/{id}")
-    suspend fun findItemById(@Path("id") id : Int) : Response<ItemsResponse>
-
-    @PUT("/shopping/{id}")
+    suspend fun addItemShopping(request : ItemsRequest): Response<ItemsResponse>
+    suspend fun deleteItemShopping(id : Int) : Response<ItemsResponse>
+    suspend fun findItemById(id : Int) : Response<ItemsResponse>
     suspend fun updateItemById(@Path("id") id :Int, @Body request : ItemsRequest) : Response<ItemsResponse>
-
 }
