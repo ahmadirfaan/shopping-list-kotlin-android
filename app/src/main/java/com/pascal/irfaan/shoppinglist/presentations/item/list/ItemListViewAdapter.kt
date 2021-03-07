@@ -5,11 +5,12 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.pascal.irfaan.shoppinglist.R
 import com.pascal.irfaan.shoppinglist.data.models.Item
+import com.pascal.irfaan.shoppinglist.data.models.ItemsEntity
 import com.pascal.irfaan.shoppinglist.utils.ItemClickListener
 
-class ItemListViewAdapter(val itemClickListener: ItemClickListener) : RecyclerView.Adapter<ItemListViewHolder>() {
+class ItemListViewAdapter(private val itemClickListener: ItemClickListener) : RecyclerView.Adapter<ItemListViewHolder>() {
 
-    private var data : List<Item> = ArrayList<Item>()
+    private var data : List<ItemsEntity> = ArrayList<ItemsEntity>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemListViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(
@@ -25,7 +26,7 @@ class ItemListViewAdapter(val itemClickListener: ItemClickListener) : RecyclerVi
 
     override fun getItemCount(): Int =  data.size
 
-    fun setItemList(newItemList : List<Item>) {
+    fun setItemList(newItemList : List<ItemsEntity>) {
         this.data = newItemList
         notifyDataSetChanged()
     }

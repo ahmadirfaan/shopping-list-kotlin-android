@@ -1,9 +1,9 @@
 package com.pascal.irfaan.shoppinglist.utils
 
-import com.pascal.irfaan.shoppinglist.data.models.Item
+import com.pascal.irfaan.shoppinglist.data.models.ItemsEntity
 
 interface ItemClickListener {
 
-    fun onDelete(item : Item)
-    fun onUpdate(item : Item)
+    fun onDelete(item: ItemsEntity)
+    fun onUpdate(item: ItemsEntity)
 }

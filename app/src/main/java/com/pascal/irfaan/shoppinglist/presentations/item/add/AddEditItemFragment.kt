@@ -13,12 +13,13 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import com.pascal.irfaan.shoppinglist.R
-import com.pascal.irfaan.shoppinglist.data.ItemDatabase
-import com.pascal.irfaan.shoppinglist.databinding.FragmentAddItemBinding
 import com.pascal.irfaan.shoppinglist.data.models.Item
+import com.pascal.irfaan.shoppinglist.data.models.ItemsRequest
+import com.pascal.irfaan.shoppinglist.data.models.ItemsResponse
+import com.pascal.irfaan.shoppinglist.data.repositories.impl.ItemRepositoriesImpl
+import com.pascal.irfaan.shoppinglist.databinding.FragmentAddItemBinding
 import com.pascal.irfaan.shoppinglist.presentations.components.LoadingDialog
 import com.pascal.irfaan.shoppinglist.presentations.item.list.ListItemViewModel
-import com.pascal.irfaan.shoppinglist.data.dao.impl.ItemRepositories
 import com.pascal.irfaan.shoppinglist.utils.DateDialog
 import com.pascal.irfaan.shoppinglist.utils.ResourceStatus
 import java.text.SimpleDateFormat
@@ -75,7 +76,7 @@ class AddEditItemFragment() : Fragment() {
                             quantity = inputQuantity.text.toString().toInt(),
                             notes = inputNotes.text.toString()
                         )
-                        listViewModel.updateItem(updatedItem)
+//                        listViewModel.updateItem(updatedItem)
                     }
                 }
                 titleShopping.setText("EDIT ITEM")
@@ -93,11 +94,12 @@ class AddEditItemFragment() : Fragment() {
                     }
                 }
                 addEditShoppingItemButton.setOnClickListener {
+                    val inputItemNameString = inputItemName.text.toString()
+                    val inputshoppingDateString = inputShoppingDate.text.toString()
+                    val inputQuantityString = inputQuantity.text.toString()
+                    val inputNotesString = inputNotes.text.toString()
                     addItemViewModel.inputValidation(
-                        inputItemName.text.toString(),
-                        inputShoppingDate.text.toString(),
-                        inputQuantity.text.toString(),
-                        inputNotes.text.toString()
+                        inputItemNameString, inputshoppingDateString, inputQuantityString, inputNotesString
                     )
                 }
             }
@@ -126,13 +128,18 @@ class AddEditItemFragment() : Fragment() {
     private fun initViewModel() {
         listViewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                val itemDao = ItemDatabase.getDatabase(requireContext()).itemDao()
-                val repo = ItemRepositories(itemDao)
+                val repo = ItemRepositoriesImpl()
                 return ListItemViewModel(repo) as T
             }
 
         }).get(ListItemViewModel::class.java)
-        addItemViewModel = ViewModelProvider(this).get(AddItemViewModel::class.java)
+        addItemViewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
+            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+                val repo = ItemRepositoriesImpl()
+                return AddItemViewModel(repo) as T
+            }
+
+        }).get(AddItemViewModel::class.java)
     }
 
     private fun subscribe() {
@@ -145,16 +152,19 @@ class AddEditItemFragment() : Fragment() {
                 ResourceStatus.SUCCESS -> {
                     Log.i("ini add item fragment", "RESOURCE STATE SUCCESS")
                     loadingDialog.hide()
-                    binding.addEditShoppingItemButton.isEnabled = true
-                    val item = Item(
-                        shoppingDate = binding.inputShoppingDate.text.toString(),
-                        itemName = binding.inputItemName.text.toString(),
-                        quantity = binding.inputQuantity.text.toString().toInt(),
-                        notes = binding.inputNotes.text.toString()
-                    )
-                    listViewModel.addItem(item)
-                    Toast.makeText(requireContext(), "ADD ${item.itemName} SUCCESSFULLY", Toast.LENGTH_SHORT).show()
-                    clearEditText()
+                    binding.apply {
+                        val inputItemNameString = inputItemName.text.toString()
+                        val inputshoppingDateString = inputShoppingDate.text.toString()
+                        val inputQuantityString = inputQuantity.text.toString()
+                        val inputNotesString = inputNotes.text.toString()
+                        val addItemRequest = ItemsRequest(
+                            itemName = inputItemNameString,
+                            dateShop = inputshoppingDateString,
+                            quantity = inputQuantityString.toInt(),
+                            notes = inputNotesString)
+                        addEditShoppingItemButton.isEnabled = true
+                        addItemViewModel.addItemShopping(addItemRequest)
+                    }
                 }
                 ResourceStatus.FAILURE -> {
                     loadingDialog.hide()
@@ -163,10 +173,22 @@ class AddEditItemFragment() : Fragment() {
                 }
             }
         })
-        listViewModel.itemUpdateLiveData.observe(this, {
-            Navigation.findNavController(requireView()).navigate(R.id.action_addItem_to_viewListShopping)
-            Toast.makeText(requireContext(), "UPDATE ${itemUpdate?.itemName} TO ${it.itemName} SUCCESSFULLY", Toast.LENGTH_LONG).show()
+        addItemViewModel.addItemShoppingLiveData.observe(this, {
+            when(it.status) {
+                ResourceStatus.SUCCESS -> {
+                    val response = it.data as ItemsResponse
+                    val itemName = response.data.itemName
+                    Toast.makeText(requireContext(), "Add item with $itemName", Toast.LENGTH_LONG).show()
+                }
+                ResourceStatus.FAILURE -> {
+                    Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT).show()
+                }
+                ResourceStatus.LOADING -> {
+                    Toast.makeText(requireContext(), "Waiting for Response", Toast.LENGTH_SHORT).show()
+                }
+            }
         })
+
     }
 
     override fun onPause() {

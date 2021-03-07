@@ -15,9 +15,12 @@ import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.pascal.irfaan.shoppinglist.R
-import com.pascal.irfaan.shoppinglist.data.ItemDatabase
+import com.pascal.irfaan.shoppinglist.data.dao.ItemDatabase
+import com.pascal.irfaan.shoppinglist.data.models.ItemsEntity
+import com.pascal.irfaan.shoppinglist.data.models.ItemsResponse
+import com.pascal.irfaan.shoppinglist.data.models.ResponsePagination
 import com.pascal.irfaan.shoppinglist.databinding.FragmentViewListShoppingBinding
-import com.pascal.irfaan.shoppinglist.data.dao.impl.ItemRepositories
+import com.pascal.irfaan.shoppinglist.data.repositories.impl.ItemRepositoriesImpl
 import com.pascal.irfaan.shoppinglist.presentations.components.LoadingDialog
 import com.pascal.irfaan.shoppinglist.utils.ResourceStatus
 
@@ -28,18 +31,14 @@ class ViewListShoppingFragment() : Fragment() {
     private lateinit var binding: FragmentViewListShoppingBinding
     private lateinit var viewModel: ListItemViewModel
     private lateinit var loadingDialog: AlertDialog
-    private var currentPage = 1
-    private var totalPages = 0
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initViewmodel()
         itemListViewAdapter = ItemListViewAdapter(viewModel)
-        viewModel.generatePage(currentPage)
         subscribe()
-        totalPages = viewModel.TOTAL_NUM_ITEMS?.div(viewModel.ITEMS_PER_PAGE) ?: 0
-
     }
 
     override fun onCreateView(
@@ -53,7 +52,6 @@ class ViewListShoppingFragment() : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.validationItemList()
         binding.apply {
             backButtonToCreateItem.setOnClickListener {
                 view?.findNavController()?.popBackStack()
@@ -61,20 +59,12 @@ class ViewListShoppingFragment() : Fragment() {
             addFabItem.setOnClickListener {
                 Navigation.findNavController(view).navigate(R.id.action_viewListShopping_to_addItem)
             }
-            nextFabItem.setOnClickListener {
-                currentPage++
-                subscribe()
-                toggleButtons()
-                viewModel.generatePage(currentPage)
-            }
-            prevFabItem.setOnClickListener {
-                currentPage--
-                subscribe()
-                toggleButtons()
-                viewModel.generatePage(currentPage)
+            binding.itemListRecyclerView.apply {
+                adapter = itemListViewAdapter
+                layoutManager = LinearLayoutManager(requireContext())
             }
         }
-
+        viewModel.getAllItemListData()
     }
 
     override fun onDestroy() {
@@ -99,8 +89,7 @@ class ViewListShoppingFragment() : Fragment() {
     private fun initViewmodel() {
         viewModel = ViewModelProvider(this, object : ViewModelProvider.Factory{
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                val itemDao = ItemDatabase.getDatabase(requireContext()).itemDao()
-                val repo = ItemRepositories(itemDao)
+                val repo = ItemRepositoriesImpl()
                 return ListItemViewModel(repo) as T
             }
 
@@ -108,57 +97,41 @@ class ViewListShoppingFragment() : Fragment() {
     }
 
     private fun subscribe() {
-        viewModel.validationItemList.observe(this, {
-            when (it.status) {
+        viewModel.itemListLiveData.observe(this, {
+            when(it.status) {
                 ResourceStatus.LOADING -> {
                     loadingDialog.show()
                 }
                 ResourceStatus.SUCCESS -> {
                     loadingDialog.hide()
-                    binding.apply{
-                        itemListRecyclerView.apply {
-                            layoutManager = LinearLayoutManager(requireContext())
-                            adapter = itemListViewAdapter
-                        }
-                    }
-                    Toast.makeText(requireContext(), "LIST ITEM DENGAN JUMLAH ${viewModel.getAllItems.value?.size}", Toast.LENGTH_SHORT).show()
+                    val response = it.data as ResponsePagination
+                    val listItem = response.data.list
+                    itemListViewAdapter.setItemList(listItem)
                 }
                 ResourceStatus.FAILURE -> {
                     loadingDialog.hide()
+                    Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT).show()
                 }
             }
         })
-        viewModel.itemUpdateLiveData.observe(this, {
-            Navigation.findNavController(requireView()).navigate(R.id.action_viewListShopping_to_addItem, bundleOf("item_update" to it))
+        viewModel.itemDeleteLiveData.observe(this, {
+            when(it.status) {
+                ResourceStatus.LOADING -> {
+                    loadingDialog.show()
+                }
+                ResourceStatus.SUCCESS -> {
+                    val response = it.data as ItemsResponse
+                    val deleted = response.data
+                    Toast.makeText(requireContext(), "DELETED ITEM with id : ${deleted.id} and name : ${deleted.itemName}", Toast.LENGTH_SHORT).show()
+                    viewModel.getAllItemListData()
+                    loadingDialog.hide()
+                }
+                ResourceStatus.FAILURE -> {
+                    loadingDialog.hide()
+                    Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT).show()
+                }
+            }
         })
-        viewModel.paginationData.observe(this, {
-            itemListViewAdapter.setItemList(it)
-        })
-
-    }
-
-    private fun toggleButtons() {
-        if ( (currentPage - 1) == totalPages && totalPages != 0) {
-            binding.apply {
-                nextFabItem.isEnabled = false
-                prevFabItem.isEnabled = true
-            }
-        } else if (currentPage == 1  && totalPages != 0) {
-            binding.apply {
-                nextFabItem.isEnabled = true
-                prevFabItem.isEnabled = false
-            }
-        } else if (currentPage >= 1 && currentPage <= totalPages!!) {
-            binding.apply {
-                nextFabItem.isEnabled = true
-                prevFabItem.isEnabled = true
-            }
-        } else {
-            binding.apply {
-                nextFabItem.isEnabled = false
-                prevFabItem.isEnabled = false
-            }
-        }
     }
 
 

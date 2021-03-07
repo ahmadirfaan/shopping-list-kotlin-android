@@ -1,10 +1,9 @@
-package com.pascal.irfaan.shoppinglist.data
+package com.pascal.irfaan.shoppinglist.data.dao
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.pascal.irfaan.shoppinglist.data.dao.ItemDao
 import com.pascal.irfaan.shoppinglist.data.models.Item
 
 @Database(entities = [Item::class], version = 1, exportSchema = true)
