@@ -8,25 +8,23 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import com.pascal.irfaan.shoppinglist.R
-import com.pascal.irfaan.shoppinglist.data.models.Item
 import com.pascal.irfaan.shoppinglist.data.models.ItemsEntity
 import com.pascal.irfaan.shoppinglist.data.models.ItemsRequest
 import com.pascal.irfaan.shoppinglist.data.models.ItemsResponse
-import com.pascal.irfaan.shoppinglist.data.repositories.impl.ItemRepositoriesImpl
 import com.pascal.irfaan.shoppinglist.databinding.FragmentAddItemBinding
 import com.pascal.irfaan.shoppinglist.presentations.components.LoadingDialog
 import com.pascal.irfaan.shoppinglist.presentations.item.list.ListItemViewModel
 import com.pascal.irfaan.shoppinglist.utils.DateDialog
 import com.pascal.irfaan.shoppinglist.utils.ResourceStatus
+import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
-import java.time.format.DateTimeFormatter
 import java.util.*
 
+@AndroidEntryPoint
 class AddEditItemFragment() : Fragment() {
 
     private var itemUpdate: ItemsEntity? = null
@@ -62,7 +60,7 @@ class AddEditItemFragment() : Fragment() {
             binding.apply {
                 itemUpdate?.apply {
                     val calendar = Calendar.getInstance()
-                    val dateShopSubString = dateShop.substring(0,10)
+                    val dateShopSubString = dateShop.substring(0, 10)
                     val sdf = SimpleDateFormat("yyyy-MM-dd")
                     calendar.time = sdf.parse(dateShopSubString)
                     val stringDate = formatDate.format(calendar.time)
@@ -134,20 +132,8 @@ class AddEditItemFragment() : Fragment() {
     }
 
     private fun initViewModel() {
-        listViewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                val repo = ItemRepositoriesImpl()
-                return ListItemViewModel(repo) as T
-            }
-
-        }).get(ListItemViewModel::class.java)
-        addItemViewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                val repo = ItemRepositoriesImpl()
-                return AddItemViewModel(repo) as T
-            }
-
-        }).get(AddItemViewModel::class.java)
+        listViewModel = ViewModelProvider(this).get(ListItemViewModel::class.java)
+        addItemViewModel = ViewModelProvider(this).get(AddItemViewModel::class.java)
     }
 
     private fun subscribe() {
@@ -169,7 +155,8 @@ class AddEditItemFragment() : Fragment() {
                             itemName = inputItemNameString,
                             dateShop = inputshoppingDateString,
                             quantity = inputQuantityString.toInt(),
-                            notes = inputNotesString)
+                            notes = inputNotesString
+                        )
                         addEditShoppingItemButton.isEnabled = true
                         addItemViewModel.addItemShopping(addItemRequest)
                     }
@@ -182,7 +169,7 @@ class AddEditItemFragment() : Fragment() {
             }
         })
         addItemViewModel.addItemShoppingLiveData.observe(this, {
-            when(it.status) {
+            when (it.status) {
                 ResourceStatus.SUCCESS -> {
                     val response = it.data as ItemsResponse
                     val itemName = response.data.itemName
@@ -198,7 +185,7 @@ class AddEditItemFragment() : Fragment() {
             }
         })
         addItemViewModel.updateItemShoppingLiveData.observe(this, {
-            when(it.status) {
+            when (it.status) {
                 ResourceStatus.SUCCESS -> {
                     val response = it.data as ItemsResponse
                     val itemName = response.data.itemName

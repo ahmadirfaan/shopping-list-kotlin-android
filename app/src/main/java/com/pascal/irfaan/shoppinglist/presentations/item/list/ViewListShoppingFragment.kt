@@ -24,8 +24,10 @@ import com.pascal.irfaan.shoppinglist.databinding.FragmentViewListShoppingBindin
 import com.pascal.irfaan.shoppinglist.data.repositories.impl.ItemRepositoriesImpl
 import com.pascal.irfaan.shoppinglist.presentations.components.LoadingDialog
 import com.pascal.irfaan.shoppinglist.utils.ResourceStatus
+import dagger.hilt.android.AndroidEntryPoint
 
 
+@AndroidEntryPoint
 class ViewListShoppingFragment() : Fragment() {
 
     private lateinit var itemListViewAdapter: ItemListViewAdapter
@@ -88,13 +90,7 @@ class ViewListShoppingFragment() : Fragment() {
 
 
     private fun initViewmodel() {
-        viewModel = ViewModelProvider(this, object : ViewModelProvider.Factory{
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                val repo = ItemRepositoriesImpl()
-                return ListItemViewModel(repo) as T
-            }
-
-        }).get(ListItemViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(ListItemViewModel::class.java)
     }
 
     private fun subscribe() {

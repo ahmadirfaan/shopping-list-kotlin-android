@@ -12,5 +12,5 @@ interface ItemRepositoryApi {
     suspend fun addItemShopping(request : ItemsRequest): Response<ItemsResponse>
     suspend fun deleteItemShopping(id : Int) : Response<ItemsResponse>
     suspend fun findItemById(id : Int) : Response<ItemsResponse>
-    suspend fun updateItemById(@Path("id") id :Int, @Body request : ItemsRequest) : Response<ItemsResponse>
+    suspend fun updateItemById(id :Int, request : ItemsRequest) : Response<ItemsResponse>
 }
